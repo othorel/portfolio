@@ -1,11 +1,24 @@
 import { Router } from "express";
-import { getAllUsers, getUserById, createUser } from "../handlers/UserHandlers.js";
+import { authenticate } from "../middlewares/AuthMiddleware.js";
+import { 
+    getAllUsers, 
+    getUserById, 
+    getUserByEmail,
+    createUser, 
+    updateUser, 
+    deleteUser 
+} from "../handlers/UserHandlers.js";
 
 const router = Router();
 
-router.get("/", getAllUsers);
-router.get("/:id", getUserById);
 router.post("/", createUser);
+
+router.use(authenticate);
+router.get("/", getAllUsers);
+router.get("/email/:email", getUserByEmail);
+router.get("/:id", getUserById);
+router.put("/:id", updateUser);
+router.delete("/:id", deleteUser);
 
 export default router;
 

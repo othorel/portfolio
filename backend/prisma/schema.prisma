@@ -20,11 +20,8 @@ model User {
   avatar       String?  @default("")
   status       String   @default("online")
   role         Role     @default(USER)
-
-  // relation many-to-many implicite pour les amis
   friends      User[]   @relation("UserFriends")
   friendOf     User[]   @relation("UserFriends")
-
   profile      Profile?
   posts        Post[]
 }

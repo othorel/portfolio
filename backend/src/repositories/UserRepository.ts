@@ -1,94 +1,52 @@
-import { PrismaClient } from "@prisma/client";
-import type { User } from "@prisma/client";
-import { randomBytes, scrypt as _scrypt } from "crypto";
-import { promisify } from "util";
+import { PrismaClient, Role, User } from "@prisma/client";
+import { AuthRepository } from "./AuthRepository.js";
 
 const prisma = new PrismaClient();
-const scrypt = promisify(_scrypt);
+const authRepo = new AuthRepository();
 
 export class UserRepository {
 
-private async hashPassword(password: string): Promise<string> {
-    const salt = randomBytes(16).toString("hex");
-    const derivedKey = (await scrypt(password, salt, 64)) as Buffer;
-    return `${salt}:${derivedKey.toString("hex")}`;
-}
-
-private async verifyPassword(stored: string, password: string): Promise<boolean> {
-  const parts = stored.split(":");
-  if (parts.length !== 2)
-    return false;
-  const salt = parts[0];
-  const key = parts[1];
-  if (!salt || !key)
-    return false;
-  const derivedKey = (await scrypt(password, salt, 64)) as Buffer;
-  return key === derivedKey.toString("hex");
-}
-
-async getAll(): Promise<User[]> {
+  async getAllUser(): Promise<User[]> {
     return prisma.user.findMany();
-}
+  }
 
-async getById(id: number): Promise<User | null> {
+  async getByIdUser(id: number): Promise<User | null> {
     return prisma.user.findUnique({ where: { id } });
-}
+  }
 
-async getByEmail(email: string): Promise<User | null> {
+  async getByEmailUser(email: string): Promise<User | null> {
     return prisma.user.findUnique({ where: { email } });
-}
+  }
 
-async create(data: { login: string; email: string; password: string; avatar?: string }): Promise<User> {
-  const hashedPassword = await this.hashPassword(data.password);
-  return prisma.user.create({
-    data: {
-      login: data.login,
-      email: data.email,
-      passwordHash: hashedPassword,
-      avatar: data.avatar || "",
-    },
-  });
-}
+  async createUser(data: { login: string; email: string; password: string; avatar?: string }): Promise<User> {
+    const hashedPassword = await authRepo.hashPassword(data.password);
+    return prisma.user.create({
+      data: {
+        login: data.login,
+        email: data.email,
+        passwordHash: hashedPassword,
+        avatar: data.avatar || "",
+      },
+    });
+  }
 
-async update(id: number, data: { name?: string; email?: string; password?: string; avatar?: string }): Promise<User> {
-    const updateData = { ...data };
+  async updateUser(
+    id: number,
+    data: { login?: string; email?: string; password?: string; avatar?: string; status?: string; role?: Role }
+  ): Promise<User> {
+    const updateData: any = {};
+    if (data.login) updateData.login = data.login;
+    if (data.email) updateData.email = data.email;
+    if (data.avatar) updateData.avatar = data.avatar;
+    if (data.status) updateData.status = data.status;
+    if (data.role) updateData.role = data.role;
     if (data.password) {
-      updateData.password = await this.hashPassword(data.password);
+      updateData.passwordHash = await authRepo.hashPassword(data.password);
     }
     return prisma.user.update({ where: { id }, data: updateData });
-}
+  }
 
-async delete(id: number): Promise<User> {
+  async deleteUser(id: number): Promise<User> {
     return prisma.user.delete({ where: { id } });
-}
-
-async addFriend(userId: number, friendId: number): Promise<User> {
-    return prisma.user.update({
-      where: { id: userId },
-      data: {
-        friends: {
-          connect: { id: friendId },
-        },
-      },
-    });
-}
-
-async removeFriend(userId: number, friendId: number): Promise<User> {
-    return prisma.user.update({
-      where: { id: userId },
-      data: {
-        friends: {
-          disconnect: { id: friendId },
-        },
-      },
-    });
-}
-
-async getFriends(userId: number): Promise<User[]> {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      include: { friends: true },
-    });
-    return user?.friends || [];
-}
+  }
 }
