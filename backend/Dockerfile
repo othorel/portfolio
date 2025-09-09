@@ -1,13 +1,15 @@
-# Use Node 20 LTS
-FROM node:20
+FROM node:20-alpine
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
 COPY package*.json ./
 RUN npm install
 
 COPY . .
 
-EXPOSE 4000
+RUN npx prisma generate
+RUN npm run build
 
-CMD ["npm", "run", "dev"]
+EXPOSE 3001
+
+CMD ["npm", "run", "start"]
