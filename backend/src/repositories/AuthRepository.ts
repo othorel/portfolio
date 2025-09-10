@@ -2,6 +2,7 @@ import { PrismaClient, User } from "@prisma/client";
 import { randomBytes, scrypt as _scrypt } from "crypto";
 import { promisify } from "util";
 
+const DEFAULT_AVATAR = "/avatars/default.png";
 const prisma = new PrismaClient();
 const scrypt = promisify(_scrypt);
 
@@ -46,6 +47,7 @@ export class AuthRepository {
       		email,
       		passwordHash,
       		role: "USER",
+			avatar: DEFAULT_AVATAR,
     	},
   	});
   	return newUser;

@@ -1,21 +1,37 @@
 "use client";
 
-import { useState } from "react";
-import { signup as apiSignup, login as apiLogin, checkEmail, checkLogin } from "@/api/auth";
-import { User as UserType } from "@/types/User";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { login as apiLogin, signup as apiSignup, checkEmail, checkLogin } from "@/api/auth";
+import { User } from "@/types/User";
+import { AuthResponse } from "@/types/Auth";
 
 export function useAuthManager() {
-  const [user, setUser] = useState<UserType | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+
+  // Charger le user si token existant (au démarrage)
+  useEffect(() => {
+  const storedUser = localStorage.getItem("User");
+  const token = localStorage.getItem("Token");
+  if (storedUser && token) {
+    setUser(JSON.parse(storedUser));
+  } else {
+    setUser(null); // rien de par défaut
+  }
+}, []);
 
   async function login(email: string, password: string) {
     setLoading(true);
     setError(null);
     try {
-      const loggedUser = await apiLogin(email, password);
-      setUser(loggedUser);
-      return loggedUser;
+      const res: AuthResponse = await apiLogin(email, password);
+      setUser(res.user);
+      localStorage.setItem("Token", res.token);
+      localStorage.setItem("User", JSON.stringify(res.user));
+      return res.user;
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "An unknown error occurred");
       throw err;
@@ -28,9 +44,11 @@ export function useAuthManager() {
     setLoading(true);
     setError(null);
     try {
-      const newUser = await apiSignup(loginStr, email, password);
-      setUser(newUser);
-      return newUser;
+      const res: AuthResponse = await apiSignup(loginStr, email, password);
+      setUser(res.user);
+      localStorage.setItem("Token", res.token);
+      localStorage.setItem("User", JSON.stringify(res.user));
+      return res.user;
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "An unknown error occurred");
       throw err;
@@ -39,38 +57,21 @@ export function useAuthManager() {
     }
   }
 
-  async function verifyEmail(email: string) {
-    setError(null);
-    try {
-      return await checkEmail(email);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "An unknown error occurred");
-      throw err;
-    }
-  }
-
-  async function verifyLogin(loginStr: string) {
-    setError(null);
-    try {
-      return await checkLogin(loginStr);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "An unknown error occurred");
-      throw err;
-    }
-  }
-
   function logout() {
     setUser(null);
     localStorage.removeItem("Token");
+    localStorage.removeItem("User");
+    router.push("/login");
   }
+
   return {
     user,
     loading,
     error,
     login,
     signup,
-    verifyEmail,
-    verifyLogin,
+    checkEmail,
+    checkLogin,
     logout,
   };
 }

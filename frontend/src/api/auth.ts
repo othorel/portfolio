@@ -1,30 +1,39 @@
 import { apiFetch } from "../utils/ApiManager";
-import { User } from "../types/User";
+import { AuthResponse } from "../types/Auth";
 
-export async function login(email: string, password: string) {
-  const data = await apiFetch<{ user: User; token: string }>(`/auth/login`, {
+export async function login(email: string, password: string): Promise<AuthResponse> {
+  const data = await apiFetch<AuthResponse>(`/auth/login`, {
     method: "POST",
     body: JSON.stringify({ email, password }),
   });
-  if (data.token)
+
+  if (data.token) {
     localStorage.setItem("Token", data.token);
-  return data.user;
+    localStorage.setItem("User", JSON.stringify(data.user));
+  }
+  return data;
 }
 
-export async function signup(login: string, email: string, password: string) {
-  const data = await apiFetch<{ user: User }>(`/auth/signup`, {
+export async function signup(login: string, email: string, password: string): Promise<AuthResponse> {
+  const data = await apiFetch<AuthResponse>(`/auth/signup`, {
     method: "POST",
     body: JSON.stringify({ login, email, password }),
   });
-  return data.user;
+
+  if (data.token) {
+    localStorage.setItem("Token", data.token);
+    localStorage.setItem("User", JSON.stringify(data.user));
+  }
+
+  return data;
 }
 
-export async function checkEmail(email: string) {
+export async function checkEmail(email: string): Promise<boolean> {
   const data = await apiFetch<{ exists: boolean }>(`/auth/email/${encodeURIComponent(email)}`);
   return data.exists;
 }
 
-export async function checkLogin(login: string) {
+export async function checkLogin(login: string): Promise<boolean> {
   const data = await apiFetch<{ exists: boolean }>(`/auth/login/${encodeURIComponent(login)}`);
   return data.exists;
 }

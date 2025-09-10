@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthManager } from "@/hooks/AuthManager";
+import { validatePassword } from "@/utils/PasswordUtils";
 import Link from "next/link";
 
 export default function SignUpForm() {
@@ -15,12 +16,25 @@ export default function SignUpForm() {
   const router = useRouter();
   const { signup, loading, error } = useAuthManager();
 
+  // Validation détaillée pour l'affichage dynamique
+  const hasUpper = /[A-Z]/.test(password);
+  const hasLower = /[a-z]/.test(password);
+  const hasNumber = /\d/.test(password);
+  const hasSpecial = /[!@#$%^&*]/.test(password);
+  const hasMinLength = password.length >= 8;
+
+  const isPasswordValid = validatePassword(password);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLocalError(null);
 
     if (password !== confirmPassword) {
       setLocalError("Les mots de passe ne correspondent pas");
+      return;
+    }
+    if (!isPasswordValid) {
+      setLocalError("Le mot de passe ne respecte pas les règles.");
       return;
     }
 
@@ -71,10 +85,36 @@ export default function SignUpForm() {
         <p className="text-red-500 text-sm">{localError || error}</p>
       )}
 
+      {/* Règles du mot de passe */}
+      <div className="text-sm text-gray-600">
+        <p>Votre mot de passe doit contenir :</p>
+        <ul className="list-disc list-inside">
+          <li className={hasMinLength ? "text-green-600" : "text-red-500"}>
+            {hasMinLength ? "✅" : "❌"} Minimum 8 caractères
+          </li>
+          <li className={hasUpper ? "text-green-600" : "text-red-500"}>
+            {hasUpper ? "✅" : "❌"} Une majuscule
+          </li>
+          <li className={hasLower ? "text-green-600" : "text-red-500"}>
+            {hasLower ? "✅" : "❌"} Une minuscule
+          </li>
+          <li className={hasNumber ? "text-green-600" : "text-red-500"}>
+            {hasNumber ? "✅" : "❌"} Un chiffre
+          </li>
+          <li className={hasSpecial ? "text-green-600" : "text-red-500"}>
+            {hasSpecial ? "✅" : "❌"} Un caractère spécial (!@#$%^&*)
+          </li>
+        </ul>
+      </div>
+
       <button
         type="submit"
-        disabled={loading}
-        className="bg-indigo-600 text-white py-2 rounded font-semibold hover:bg-indigo-700 transition"
+        disabled={loading || !isPasswordValid || password !== confirmPassword}
+        className={`py-2 rounded font-semibold transition ${
+          loading || !isPasswordValid || password !== confirmPassword
+            ? "bg-gray-400 text-gray-700 cursor-not-allowed"
+            : "bg-indigo-600 text-white hover:bg-indigo-700"
+        }`}
       >
         {loading ? "Inscription..." : "S’inscrire"}
       </button>
