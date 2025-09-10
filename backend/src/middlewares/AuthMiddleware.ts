@@ -12,7 +12,6 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
     return res.status(401).json({ success: false, message: "Malformed token" });
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-
     if (typeof decoded === "string") {
       return res.status(401).json({ success: false, message: "Invalid token payload" });
     }

@@ -12,7 +12,6 @@ import {
 const router = Router();
 
 router.post("/", createUser);
-
 router.use(authenticate);
 router.get("/", getAllUsers);
 router.get("/email/:email", getUserByEmail);

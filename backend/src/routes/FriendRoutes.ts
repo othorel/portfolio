@@ -11,6 +11,6 @@ const router = Router();
 router.use(authenticate);
 router.post("/add", addFriend);
 router.post("/remove", removeFriend);
-router.get("/:id", getFriends);
+router.get("/:userId", getFriends);
 
 export default router;

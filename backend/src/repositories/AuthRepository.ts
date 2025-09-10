@@ -28,8 +28,28 @@ export class AuthRepository {
 		const isValid = await this.verifyPassword(user.passwordHash, password);
 		if (!isValid)
 			return null;
-		return user; // ⚠️ ici tu renvoies l’objet User, mais sans token (à gérer côté service ou controller)
+		return user;
  	 }
+
+	async signup(login: string, email: string, password: string): Promise<User> {
+  		const exists = await prisma.user.findFirst({
+    		where: {
+    		OR: [{ email }, { login }],
+    		},
+  		});
+  		if (exists)
+    		throw new Error("Email ou login déjà utilisé");
+  		const passwordHash = await this.hashPassword(password);
+ 		const newUser = await prisma.user.create({
+    		data: {
+      		login,
+      		email,
+      		passwordHash,
+      		role: "USER",
+    	},
+  	});
+  	return newUser;
+	}
 
   	async emailExists(email: string): Promise<boolean> {
 		const user = await prisma.user.findUnique({ where: { email } });

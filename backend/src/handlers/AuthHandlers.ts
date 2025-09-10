@@ -22,6 +22,27 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
+export const signup = async (req: Request, res: Response) => {
+  const { login, email, password } = req.body;
+  if (!login || !email || !password)
+    return res.status(400).json({ success: false, message: "Champs requis manquants" });
+  try {
+    const user = await authRepo.signup(login, email, password);
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.JWT_SECRET as string,
+      { expiresIn: "1h" }
+    );
+    res.status(201).json({
+      success: true,
+      user,
+      token,
+    });
+  } catch (err: any) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+};
+
 export const checkEmail = async (req: Request, res: Response) => {
   const { email } = req.params;
   if (!email) {
