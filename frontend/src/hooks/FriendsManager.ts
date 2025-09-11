@@ -8,7 +8,7 @@ import {
 } from "@/api/friends";
 import { User } from "@/types/User";
 
-export function useFriendManager(userId: number) {
+export function FriendsManager(userId: number) {
   const [friends, setFriends] = useState<User[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);

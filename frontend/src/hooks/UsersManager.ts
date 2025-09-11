@@ -65,16 +65,20 @@ export function UsersManager() {
   }
 
   async function modifyUser(id: number, updateData: Partial<UserType>) {
-    setError(null);
-    try {
-      const updated = await updateUser(id, updateData);
-      setUsers((prev) => prev.map(u => u.id === id ? updated : u));
-      return updated;
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "An unknown error occurred");
-      throw err;
-    }
+  setError(null);
+  try {
+    const dataToSend = {
+      ...updateData,
+      avatar: updateData.avatar ?? undefined,
+    };
+    const updated = await updateUser(id, dataToSend);
+    setUsers((prev) => prev.map(u => u.id === id ? updated : u));
+    return updated;
+  } catch (err: unknown) {
+    setError(err instanceof Error ? err.message : "An unknown error occurred");
+    throw err;
   }
+}
 
   async function removeUser(id: number) {
     setError(null);

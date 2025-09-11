@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuthManager } from "@/hooks/AuthManager";
+import { useAuth } from "@/context/AuthContext";
 import { validatePassword } from "@/utils/PasswordUtils";
 import Link from "next/link";
 
@@ -12,17 +12,13 @@ export default function SignUpForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [localError, setLocalError] = useState<string | null>(null);
-
   const router = useRouter();
-  const { signup, loading, error } = useAuthManager();
-
-  // Validation détaillée pour l'affichage dynamique
+  const { signup, loading, error } = useAuth();
   const hasUpper = /[A-Z]/.test(password);
   const hasLower = /[a-z]/.test(password);
   const hasNumber = /\d/.test(password);
   const hasSpecial = /[!@#$%^&*]/.test(password);
   const hasMinLength = password.length >= 8;
-
   const isPasswordValid = validatePassword(password);
 
   const handleSubmit = async (e: React.FormEvent) => {

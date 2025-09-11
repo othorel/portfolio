@@ -1,6 +1,7 @@
 import { PrismaClient, User } from "@prisma/client";
 import { randomBytes, scrypt as _scrypt } from "crypto";
 import { promisify } from "util";
+import { generateToken } from "../utils/JwtUtils.js";
 
 const DEFAULT_AVATAR = "/avatars/default.png";
 const prisma = new PrismaClient();
@@ -22,17 +23,18 @@ export class AuthRepository {
 		return key === derivedKey.toString("hex");
 	  }
 
-	async login(email: string, password: string): Promise<User | null> {
+	async login(email: string, password: string): Promise<{ user: User; token: string } | null> {
 		const user = await prisma.user.findUnique({ where: { email } });
 		if (!user)
 			return null;
 		const isValid = await this.verifyPassword(user.passwordHash, password);
 		if (!isValid)
 			return null;
-		return user;
+		const token = generateToken(user.id);
+		return { user, token };
  	 }
 
-	async signup(login: string, email: string, password: string): Promise<User> {
+	async signup(login: string, email: string, password: string): Promise<{ user: User; token: string } | null> {
   		const exists = await prisma.user.findFirst({
     		where: {
     		OR: [{ email }, { login }],
@@ -41,7 +43,7 @@ export class AuthRepository {
   		if (exists)
     		throw new Error("Email ou login déjà utilisé");
   		const passwordHash = await this.hashPassword(password);
- 		const newUser = await prisma.user.create({
+ 		const user = await prisma.user.create({
     		data: {
       		login,
       		email,
@@ -50,7 +52,8 @@ export class AuthRepository {
 			avatar: DEFAULT_AVATAR,
     	},
   	});
-  	return newUser;
+	const token = generateToken(user.id);
+  	return { user, token };
 	}
 
   	async emailExists(email: string): Promise<boolean> {

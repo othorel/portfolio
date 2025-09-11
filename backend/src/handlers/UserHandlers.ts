@@ -56,11 +56,18 @@ export const createUser = async (req: Request, res: Response) => {
 };
 
 export const updateUser = async (req: Request, res: Response) => {
+  console.log("req.file:", req.file);
+  console.log("req.body:", req.body);
   const { id } = req.params;
   const userId = parseInt(id, 10);
-  const { login, email, password, avatar, status, role } = req.body;
   if (isNaN(userId))
     return res.status(400).json({ success: false, message: "User ID must be a number" });
+  const { login, email, password, status, role } = req.body;
+  let avatar: string | undefined;
+  if (req.file) {
+    avatar = `/uploads/avatars/${req.file.filename}`;
+  }
+
   try {
     const user = await userRepo.updateUser(userId, { login, email, password, avatar, status, role });
     res.json({ success: true, user });

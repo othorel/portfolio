@@ -1,13 +1,16 @@
-import espress from "express";
+import express from "express";
 import cors from "cors";
+import path from "path";
 import userRoutes from "./routes/UserRoutes.js";
 import friendRoutes from "./routes/FriendRoutes.js";
 import authRoutes from "./routes/AuthRoutes.js";
 
-const app = espress();
+const app = express();
 
 app.use(cors());
-app.use(espress.json());
+app.use(express.json());
+app.use("/uploads", express.static(path.join(process.cwd(), "src/uploads")));
+
 app.use("/users", userRoutes);
 app.use("/friends", friendRoutes);
 app.use("/auth", authRoutes);

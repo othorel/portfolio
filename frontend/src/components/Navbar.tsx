@@ -1,16 +1,37 @@
 "use client";
 
 import Link from "next/link";
-import { useAuthManager } from "@/hooks/AuthManager";
-import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { useState, useEffect, useRef } from "react";
 
 export default function Navbar() {
-  const { user, logout } = useAuthManager();
+  const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const avatarUrl = user
+    ? user.avatar
+      ? user.avatar.startsWith("http")
+        ? user.avatar
+        : `http://localhost:4000${user.avatar}`
+      : "/avatars/default.png"
+    : null;
 
   return (
     <nav className="w-full bg-white shadow-md px-8 py-4 flex justify-between items-center">
-      <h1 className="text-2xl font-bold text-indigo-600">Project Collab</h1>
+      <Link href="/" className="text-2xl font-bold text-indigo-600">
+        Project Collab
+      </Link>
 
       {!user ? (
         <div className="flex gap-4">
@@ -22,23 +43,23 @@ export default function Navbar() {
           </Link>
         </div>
       ) : (
-        <div
-          className="relative"
-          onMouseEnter={() => setMenuOpen(true)}
-          onMouseLeave={() => setMenuOpen(false)}
-        >
+        <div className="relative" ref={menuRef}>
           <img
-            src={user.avatar || "/avatars/default.png"}
+            src={avatarUrl!}
             alt="Avatar"
             className="w-10 h-10 rounded-full cursor-pointer border-2 border-indigo-500"
+            onClick={() => setMenuOpen(!menuOpen)}
           />
           {menuOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded shadow-lg p-2">
+            <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded shadow-lg p-2 z-50">
               <Link href="/profile" className="block px-4 py-2 hover:bg-gray-100">
                 Mon profil
               </Link>
               <button
-                onClick={logout}
+                onClick={() => {
+                  logout();
+                  setMenuOpen(false);
+                }}
                 className="w-full text-left px-4 py-2 hover:bg-gray-100"
               >
                 Déconnexion
