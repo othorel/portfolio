@@ -3,7 +3,10 @@ import { authenticate } from "../middlewares/AuthMiddleware.js";
 import { 
     addFriend,
     removeFriend,
-    getFriends   
+    getFriends,
+    acceptFriend,
+    rejectFriend,
+    getPendingRequests   
 } from "../handlers/FriendHandlers.js";
 
 const router = Router();
@@ -11,6 +14,9 @@ const router = Router();
 router.use(authenticate);
 router.post("/add", addFriend);
 router.post("/remove", removeFriend);
-router.get("/:userId", getFriends);
+router.post("/accept", acceptFriend);
+router.post("/reject", rejectFriend);
+router.get("/requests", getPendingRequests);
+router.get("/", getFriends);
 
 export default router;

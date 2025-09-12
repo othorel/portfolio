@@ -2,6 +2,7 @@
 
 import ProfileInfo from "@/components/Profile/ProfileInfo";
 import ChangePassword from "@/components/Profile/ChangePassword";
+import ProfileFriends from "@/components/Profile/ProfileFriends";
 
 export default function ProfilePage() {
   return (
@@ -17,6 +18,10 @@ export default function ProfilePage() {
 
         <div className="bg-white rounded-xl shadow-md p-6 flex flex-col gap-4">
           <ChangePassword />
+        </div>
+
+        <div className="bg-white rounded-xl shadow-md p-6 flex flex-col gap-4">
+          <ProfileFriends />
         </div>
       </div>
     </main>

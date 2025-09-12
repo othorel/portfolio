@@ -2,28 +2,36 @@
 
 import { useState, useEffect } from "react";
 import {
-    addFriend,
-    removeFriend,
-    getFriends
+  addFriend as apiAddFriend,
+  removeFriend as apiRemoveFriend,
+  getFriends as apiGetFriends,
+  getPendingRequests as apiGetPendingRequests,
+  acceptFriend as apiAcceptFriend,
+  rejectFriend as apiRejectFriend
 } from "@/api/friends";
 import { User } from "@/types/User";
+import { Friendship } from "@/types/Friendship";
 
-export function FriendsManager(userId: number) {
+export function FriendsManager() {
   const [friends, setFriends] = useState<User[]>([]);
+  const [pendingRequests, setPendingRequests] = useState<Friendship[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  useEffect(() => {
-    if (userId) {
-      fetchFriends();
-    }
-  }, [userId]);
 
-  async function fetchFriends() {
+  useEffect(() => {
+    fetchAll();
+  }, []);
+
+  async function fetchAll() {
     setLoading(true);
     setError(null);
     try {
-      const data = await getFriends(userId);
-      setFriends(data);
+      const [friendsData, requestsData] = await Promise.all([
+        apiGetFriends(),
+        apiGetPendingRequests()
+      ]);
+      setFriends(friendsData);
+      setPendingRequests(requestsData);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "An unknown error occurred");
     } finally {
@@ -31,12 +39,11 @@ export function FriendsManager(userId: number) {
     }
   }
 
-  async function add(friendId: number) {
+  async function add(friendLogin: string) {
     setError(null);
     try {
-      const updatedUser = await addFriend(friendId);
-      await fetchFriends();
-      return updatedUser;
+      await apiAddFriend(friendLogin);
+      await fetchAll();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "An unknown error occurred");
       throw err;
@@ -46,20 +53,45 @@ export function FriendsManager(userId: number) {
   async function remove(friendId: number) {
     setError(null);
     try {
-      const updatedUser = await removeFriend(friendId);
-      await fetchFriends();
-      return updatedUser;
+      await apiRemoveFriend(friendId);
+      await fetchAll();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "An unknown error occurred");
       throw err;
     }
   }
+
+  async function accept(request: Friendship) {
+    setError(null);
+    try {
+      await apiAcceptFriend(request.friendId);
+      await fetchAll();
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "An unknown error occurred");
+      throw err;
+    }
+  }
+
+  async function reject(request: Friendship) {
+    setError(null);
+    try {
+      await apiRejectFriend(request.friendId);
+      await fetchAll();
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "An unknown error occurred");
+      throw err;
+    }
+  }
+
   return {
     friends,
+    pendingRequests,
     loading,
     error,
-    fetchFriends,
+    fetchAll,
     add,
     remove,
+    accept,
+    reject
   };
 }

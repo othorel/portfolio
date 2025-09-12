@@ -1,5 +1,5 @@
 import { apiFetch } from "../utils/ApiManager";
-import { AuthResponse } from "../types/Auth";
+import { AuthResponse } from "../types/AuthResponse";
 
 export async function login(email: string, password: string): Promise<AuthResponse> {
   const data = await apiFetch<AuthResponse>(`/auth/login`, {

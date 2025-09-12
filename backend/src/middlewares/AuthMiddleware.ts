@@ -1,9 +1,14 @@
 import type { Request, Response, NextFunction } from "express";
+import { AuthenticatedRequest } from "../types/AuthenticatedRequest.js";
 import jwt from "jsonwebtoken";
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-export const authenticate = (req: Request, res: Response, next: NextFunction) => {
+export const authenticate = (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
   const authHeader = req.headers.authorization;
   if (!authHeader)
     return res.status(401).json({ success: false, message: "No token provided" });
@@ -16,11 +21,12 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
       return res.status(401).json({ success: false, message: "Invalid token payload" });
     }
     req.user = {
-      userId: decoded.userId as number,
-      role: decoded.role as string,
+      userId: (decoded as any).userId as number,
+      role: (decoded as any).role as string,
     };
+
     next();
-  } catch {
+  } catch (err) {
     return res.status(401).json({ success: false, message: "Invalid or expired token" });
   }
 };

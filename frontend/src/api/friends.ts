@@ -1,23 +1,45 @@
 import { apiFetch } from "../utils/ApiManager";
 import { User } from "../types/User";
+import { Friendship } from "../types/Friendship";
 
-export async function addFriend(userId: number) {
-  const data = await apiFetch<{ user: User }>(`/friends/add`, {
+export async function addFriend(friendLogin: string) {
+  const data = await apiFetch<{ friendship: Friendship }>("/friends/add", {
     method: "POST",
-    body: JSON.stringify({ friendId: userId }),
+    body: JSON.stringify({ friendLogin }),
   });
-  return data.user;
+  return data.friendship;
 }
 
-export async function removeFriend(userId: number) {
-  const data = await apiFetch<{ user: User }>(`/friends/remove`, {
+export async function acceptFriend(friendId: number) {
+  const data = await apiFetch<{ friendship: Friendship }>("/friends/accept", {
     method: "POST",
-    body: JSON.stringify({ friendId: userId }),
+    body: JSON.stringify({ friendId }),
   });
-  return data.user;
+  return data.friendship;
 }
 
-export async function getFriends(userId: number) {
-  const data = await apiFetch<{ friends: User[] }>(`/friends/${userId}`);
+export async function rejectFriend(friendId: number) {
+  const data = await apiFetch<{ friendship: Friendship }>("/friends/reject", {
+    method: "POST",
+    body: JSON.stringify({ friendId }),
+  });
+  return data.friendship;
+}
+
+export async function removeFriend(friendId: number) {
+  await apiFetch("/friends/remove", {
+    method: "POST",
+    body: JSON.stringify({ friendId }),
+  });
+}
+
+export async function getFriends() {
+  const data = await apiFetch<{ friends: User[] }>("/friends");
   return data.friends ?? [];
 }
+
+export async function getPendingRequests() {
+  const data = await apiFetch<{ requests: Friendship[] }>("/friends/requests");
+  return data.requests ?? [];
+}
+

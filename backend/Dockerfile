@@ -15,4 +15,5 @@ RUN npm run build
 
 EXPOSE 3001
 
-CMD npx prisma migrate deploy && npm run start
+CMD npx prisma migrate dev --name init && npm run start
+

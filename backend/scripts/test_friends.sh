@@ -1,50 +1,98 @@
 #!/bin/bash
 # scripts/test_friends.sh
+# Test complet du système d'amis avec JWT
 
 BASE_URL="http://localhost:4000"
-EMAIL="toto@test.com"
-PASSWORD="1234"
 
-echo "🔑 Login pour récupérer un token..."
-LOGIN_RESPONSE=$(curl -s -X POST "$BASE_URL/auth/login" \
+# Infos utilisateurs
+USER1_EMAIL="toto@test.com"
+USER1_PASSWORD="66shireS@kura66"
+USER1_LOGIN="toto"
+
+USER2_EMAIL="tata@test.com"
+USER2_PASSWORD="66shireS@kura66"
+USER2_LOGIN="tata"
+
+# --- Création / récupération des utilisateurs ---
+
+echo "👤 Création ou récupération de l'utilisateur 1..."
+CREATE_USER1=$(curl -s -X POST "$BASE_URL/users" \
   -H "Content-Type: application/json" \
-  -d "{\"email\":\"$EMAIL\",\"password\":\"$PASSWORD\"}")
+  -d "{\"login\":\"$USER1_LOGIN\",\"email\":\"$USER1_EMAIL\",\"password\":\"$USER1_PASSWORD\"}")
 
-TOKEN=$(echo $LOGIN_RESPONSE | jq -r '.token')
-echo "✅ Token: $TOKEN"
-
-# Crée un deuxième utilisateur pour tester l'amitié
-echo "👤 Création de l'utilisateur 2 (tata)..."
-CREATE_RESPONSE=$(curl -s -X POST "$BASE_URL/users" \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"login":"tata","email":"tata@test.com","password":"1234"}')
-
-USER2_ID=$(echo $CREATE_RESPONSE | jq -r '.user.id // empty')
-
-# Si l'utilisateur existe déjà, récupère l'ID depuis l'API
-if [ -z "$USER2_ID" ]; then
-  USER2_ID=$(curl -s -X GET "$BASE_URL/users/email/tata@test.com" \
-    -H "Authorization: Bearer $TOKEN" | jq -r '.user.id')
+USER1_ID=$(echo $CREATE_USER1 | jq -r '.user.id // empty')
+if [ -z "$USER1_ID" ]; then
+  USER1_ID=$(curl -s -X GET "$BASE_URL/users/email/$USER1_EMAIL" \
+    -H "Content-Type: application/json" | jq -r '.user.id')
 fi
+echo "✅ User1 ID: $USER1_ID"
 
+echo "👤 Création ou récupération de l'utilisateur 2..."
+CREATE_USER2=$(curl -s -X POST "$BASE_URL/users" \
+  -H "Content-Type: application/json" \
+  -d "{\"login\":\"$USER2_LOGIN\",\"email\":\"$USER2_EMAIL\",\"password\":\"$USER2_PASSWORD\"}")
+
+USER2_ID=$(echo $CREATE_USER2 | jq -r '.user.id // empty')
+if [ -z "$USER2_ID" ]; then
+  USER2_ID=$(curl -s -X GET "$BASE_URL/users/email/$USER2_EMAIL" \
+    -H "Content-Type: application/json" | jq -r '.user.id')
+fi
 echo "✅ User2 ID: $USER2_ID"
 
-# Ajouter l'ami
-echo "➕ Ajout d'un ami (user 1 ajoute user 2)..."
+# --- Login pour récupérer le token de l'utilisateur 1 ---
+echo "🔑 Login de l'utilisateur 1 pour obtenir un token..."
+LOGIN_RESPONSE=$(curl -s -X POST "$BASE_URL/auth/login" \
+  -H "Content-Type: application/json" \
+  -d "{\"email\":\"$USER1_EMAIL\",\"password\":\"$USER1_PASSWORD\"}")
+
+TOKEN_USER1=$(echo $LOGIN_RESPONSE | jq -r '.token')
+echo "✅ Token utilisateur 1: $TOKEN_USER1"
+
+# --- Login pour récupérer le token de l'utilisateur 2 ---
+echo "🔑 Login de l'utilisateur 2 pour obtenir un token..."
+LOGIN_RESPONSE2=$(curl -s -X POST "$BASE_URL/auth/login" \
+  -H "Content-Type: application/json" \
+  -d "{\"email\":\"$USER2_EMAIL\",\"password\":\"$USER2_PASSWORD\"}")
+
+TOKEN_USER2=$(echo $LOGIN_RESPONSE2 | jq -r '.token')
+echo "✅ Token utilisateur 2: $TOKEN_USER2"
+
+# --- Test d'ajout d'amis ---
+echo "➕ User1 ajoute User2 en ami..."
 curl -s -X POST "$BASE_URL/friends/add" \
-  -H "Authorization: Bearer $TOKEN" \
+  -H "Authorization: Bearer $TOKEN_USER1" \
   -H "Content-Type: application/json" \
-  -d "{\"userId\":1,\"friendId\":$USER2_ID}" | jq
+  -d "{\"friendLogin\":\"$USER2_LOGIN\"}" | jq
 
-# Récupérer la liste des amis
-echo "👥 Liste des amis de user 1..."
-curl -s -X GET "$BASE_URL/friends/1" \
-  -H "Authorization: Bearer $TOKEN" | jq
+# --- Vérification des demandes en attente pour User2 ---
+echo "📨 Demandes en attente pour User2..."
+curl -s -X GET "$BASE_URL/friends/requests" \
+  -H "Authorization: Bearer $TOKEN_USER2" | jq
 
-# Supprimer l'ami
-echo "➖ Suppression de l'ami (user 1 supprime user 2)..."
+# --- User2 accepte la demande ---
+echo "✅ User2 accepte la demande..."
+curl -s -X POST "$BASE_URL/friends/accept" \
+  -H "Authorization: Bearer $TOKEN_USER2" \
+  -H "Content-Type: application/json" \
+  -d "{\"friendId\":$USER1_ID}" | jq
+
+# --- Vérification des amis ---
+echo "👥 Liste des amis de User1..."
+curl -s -X GET "$BASE_URL/friends" \
+  -H "Authorization: Bearer $TOKEN_USER1" | jq
+
+echo "👥 Liste des amis de User2..."
+curl -s -X GET "$BASE_URL/friends" \
+  -H "Authorization: Bearer $TOKEN_USER2" | jq
+
+# --- Suppression de l'ami ---
+echo "➖ User1 supprime User2..."
 curl -s -X POST "$BASE_URL/friends/remove" \
-  -H "Authorization: Bearer $TOKEN" \
+  -H "Authorization: Bearer $TOKEN_USER1" \
   -H "Content-Type: application/json" \
-  -d "{\"userId\":1,\"friendId\":$USER2_ID}" | jq
+  -d "{\"friendId\":$USER2_ID}" | jq
+
+# --- Vérification après suppression ---
+echo "👥 Liste des amis de User1 après suppression..."
+curl -s -X GET "$BASE_URL/friends" \
+  -H "Authorization: Bearer $TOKEN_USER1" | jq
