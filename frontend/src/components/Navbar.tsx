@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect, useRef } from "react";
+import { normalizeAvatar } from "@/utils/NormalizeAvatar";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -19,13 +21,16 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const avatarUrl = user
-    ? user.avatar
-      ? user.avatar.startsWith("http")
-        ? user.avatar
-        : `http://localhost:4000${user.avatar}`
-      : "/avatars/default.png"
-    : null;
+  useEffect(() => {
+    if (user) {
+      const resolved = normalizeAvatar(user.avatar);
+      setAvatarUrl(resolved);
+    } else {
+      setAvatarUrl(null);
+    }
+  }, [user]);
+  
+  const handleImgError = () => setAvatarUrl("/avatars/default.png");
 
   return (
     <nav className="w-full bg-white shadow-md px-8 py-4 flex justify-between items-center">
@@ -44,21 +49,29 @@ export default function Navbar() {
         </div>
       ) : (
         <div className="relative" ref={menuRef}>
-          <img
-            src={avatarUrl!}
-            alt="Avatar"
-            className="w-10 h-10 rounded-full cursor-pointer border-2 border-indigo-500"
-            onClick={() => setMenuOpen(!menuOpen)}
-          />
+          {avatarUrl && (
+            <img
+              src={avatarUrl}
+              alt="Avatar"
+              className="w-10 h-10 rounded-full cursor-pointer border-2 border-indigo-500"
+              onClick={() => setMenuOpen(!menuOpen)}
+              onError={handleImgError}
+            />
+          )}
+
           {menuOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded shadow-lg p-2 z-50">
-              <Link href="/profile" className="block px-4 py-2 hover:bg-gray-100">
+              <Link
+                href="/profile"
+                className="block px-4 py-2 hover:bg-gray-100"
+                onClick={() => setMenuOpen(false)} // ferme le menu
+              >
                 Mon profil
               </Link>
               <button
                 onClick={() => {
                   logout();
-                  setMenuOpen(false);
+                  setMenuOpen(false); // ferme le menu
                 }}
                 className="w-full text-left px-4 py-2 hover:bg-gray-100"
               >

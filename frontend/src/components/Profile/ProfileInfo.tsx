@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { normalizeAvatar } from "@/utils/NormalizeAvatar";
 
 export default function ProfileInfo() {
   const { user, setUser } = useAuth();
@@ -14,13 +15,9 @@ export default function ProfileInfo() {
   useEffect(() => {
     if (user) {
       setEmail(user.email);
-      setPreview(
-        user.avatar
-          ? user.avatar.startsWith("http")
-            ? user.avatar
-            : `http://localhost:4000${user.avatar}`
-          : "/avatars/default.png"
-      );
+      const isDefault = !user.avatar || user.avatar.includes("/avatars/default.png");
+      const normalized = isDefault ? "/avatars/default.png" : normalizeAvatar(user.avatar);
+      setPreview(normalized);
     }
   }, [user]);
 
@@ -33,47 +30,45 @@ export default function ProfileInfo() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
-
+    if (!user)
+      return;
     setLoading(true);
     setMessage("");
-
     try {
       const formData = new FormData();
       formData.append("email", email);
-      if (avatar) formData.append("avatar", avatar);
-
+      if (avatar)
+        formData.append("avatar", avatar);
       const token = localStorage.getItem("Token");
       const res = await fetch(`http://localhost:4000/users/${user.id}`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
-
       const data = await res.json();
-
       if (res.ok) {
-        const updatedUser = { ...user, email, avatar: data.user.avatar || null };
+        const updatedUser = {
+          ...user,
+          email,
+          avatar: data.user.avatar || null,
+        };
         setUser(updatedUser);
         localStorage.setItem("User", JSON.stringify(updatedUser));
-        setPreview(
-          updatedUser.avatar
-            ? `http://localhost:4000${updatedUser.avatar}`
-            : "/avatars/default.png"
-        );
+        const normalized = normalizeAvatar(updatedUser.avatar);
+        setPreview(normalized);
         setMessage("Profil mis à jour !");
       } else {
         setMessage(data.message || "Erreur lors de la mise à jour");
       }
     } catch (err) {
-      console.error(err);
       setMessage("Erreur lors de la mise à jour");
     } finally {
       setLoading(false);
     }
   };
 
-  if (!user) return <p>Chargement...</p>;
+  if (!user)
+    return <p>Chargement...</p>;
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-gray-50 rounded-xl shadow-md flex flex-col gap-6">

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { login as apiLogin, signup as apiSignup, checkEmail, checkLogin } from "@/api/auth";
 import { User } from "@/types/User";
 import { AuthResponse } from "@/types/Auth";
+import { normalizeAvatar } from "@/utils/NormalizeAvatar";
 
 interface AuthContextType {
   user: User | null;
@@ -30,7 +31,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const storedUser = localStorage.getItem("User");
     const token = localStorage.getItem("Token");
     if (storedUser && token) {
-      setUser(JSON.parse(storedUser));
+      const parsed = JSON.parse(storedUser);
+      parsed.avatar = normalizeAvatar(parsed.avatar);
+      setUser(parsed);
     }
   }, []);
 
@@ -39,10 +42,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const res: AuthResponse = await apiLogin(email, password);
-      setUser(res.user);
+      const normalizedUser = { ...res.user, avatar: normalizeAvatar(res.user.avatar) };
+      setUser(normalizedUser);
       localStorage.setItem("Token", res.token);
-      localStorage.setItem("User", JSON.stringify(res.user));
-      return res.user;
+      localStorage.setItem("User", JSON.stringify(normalizedUser));
+      return normalizedUser;
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "An unknown error occurred");
       throw err;
@@ -56,10 +60,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const res: AuthResponse = await apiSignup(loginStr, email, password);
-      setUser(res.user);
+      const normalizedUser = { ...res.user, avatar: res.user.avatar ? normalizeAvatar(res.user.avatar) : null };
+      setUser(normalizedUser);
       localStorage.setItem("Token", res.token);
-      localStorage.setItem("User", JSON.stringify(res.user));
-      return res.user;
+      localStorage.setItem("User", JSON.stringify(normalizedUser));
+      return normalizedUser;
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "An unknown error occurred");
       throw err;
