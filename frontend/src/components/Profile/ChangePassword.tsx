@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { changePassword } from "@/api/profile";
 
 export default function ChangePassword() {
   const { user } = useAuth();
@@ -15,38 +16,33 @@ export default function ChangePassword() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (newPassword !== confirmPassword) {
       setMessage("Les nouveaux mots de passe ne correspondent pas.");
       return;
     }
-
     setLoading(true);
     setMessage("");
-
     try {
-      const res = await fetch(`/api/user/${user.id}/change-password`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ currentPassword, newPassword }),
-      });
-      const data = await res.json();
-
-      if (res.ok) {
-        setMessage("Mot de passe mis à jour !");
-        setCurrentPassword("");
-        setNewPassword("");
-        setConfirmPassword("");
-      } else {
-        setMessage(data.message || "Erreur lors de la mise à jour");
-      }
-    } catch (err) {
-      console.error(err);
-      setMessage("Erreur lors de la mise à jour");
+      const msg = await changePassword(user.id, currentPassword, newPassword);
+      setMessage(msg);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err: unknown) {
+      if (err instanceof Error)
+        setMessage(err.message);
+      else
+        setMessage("Erreur lors de la mise à jour du mot de passe.");
     } finally {
       setLoading(false);
     }
   };
+
+  const hasUpper = /[A-Z]/.test(newPassword);
+  const hasLower = /[a-z]/.test(newPassword);
+  const hasNumber = /\d/.test(newPassword);
+  const hasSpecial = /[!@#$%^&*]/.test(newPassword);
+  const hasMinLength = newPassword.length >= 8;
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-gray-50 rounded-xl shadow-md flex flex-col gap-6">
@@ -68,6 +64,27 @@ export default function ChangePassword() {
           className="w-full border border-gray-300 rounded px-3 py-2 text-gray-800"
           required
         />
+
+        {newPassword && (
+          <ul className="text-sm text-gray-600 list-disc list-inside">
+            <li className={hasMinLength ? "text-green-600" : "text-red-500"}>
+              {hasMinLength ? "✅" : "❌"} Minimum 8 caractères
+            </li>
+            <li className={hasUpper ? "text-green-600" : "text-red-500"}>
+              {hasUpper ? "✅" : "❌"} Une majuscule
+            </li>
+            <li className={hasLower ? "text-green-600" : "text-red-500"}>
+              {hasLower ? "✅" : "❌"} Une minuscule
+            </li>
+            <li className={hasNumber ? "text-green-600" : "text-red-500"}>
+              {hasNumber ? "✅" : "❌"} Un chiffre
+            </li>
+            <li className={hasSpecial ? "text-green-600" : "text-red-500"}>
+              {hasSpecial ? "✅" : "❌"} Un caractère spécial (!@#$%^&*)
+            </li>
+          </ul>
+        )}
+
         <input
           type="password"
           placeholder="Confirmer le nouveau mot de passe"

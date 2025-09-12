@@ -49,4 +49,15 @@ export class UserRepository {
   async deleteUser(id: number): Promise<User> {
     return prisma.user.delete({ where: { id } });
   }
+
+  async changePassword(id: number, currentPassword: string, newPassword: string): Promise<void> {
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user)
+      throw new Error("User not found");
+    const passwordMatch = await authRepo.verifyPassword(user.passwordHash, currentPassword);
+    if (!passwordMatch)
+      throw new Error("Current password is incorrect");
+    const newHashedPassword = await authRepo.hashPassword(newPassword);
+    await prisma.user.update({ where: { id }, data: { passwordHash: newHashedPassword } });
+  }
 }

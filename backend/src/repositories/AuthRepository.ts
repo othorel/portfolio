@@ -15,7 +15,7 @@ export class AuthRepository {
 		return `${salt}:${derivedKey.toString("hex")}`;
 	}
 
-  	private async verifyPassword(stored: string, password: string): Promise<boolean> {
+  	async verifyPassword(stored: string, password: string): Promise<boolean> {
 		const [salt, key] = stored.split(":");
 		if (!salt || !key)
 			return false;

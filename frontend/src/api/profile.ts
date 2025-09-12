@@ -3,9 +3,10 @@ import { User } from "../types/User";
 
 export async function updateMyProfile(id: number, updateData: { email?: string; avatar?: File }) {
   const formData = new FormData();
-  if (updateData.email) formData.append("email", updateData.email);
-  if (updateData.avatar) formData.append("avatar", updateData.avatar);
-
+  if (updateData.email)
+    formData.append("email", updateData.email);
+  if (updateData.avatar)
+    formData.append("avatar", updateData.avatar);
   const data = await apiFetch<{ user: User }>(`/users/${id}`, {
     method: "PUT",
     body: formData,

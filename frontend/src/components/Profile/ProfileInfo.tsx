@@ -7,6 +7,7 @@ import { normalizeAvatar } from "@/utils/NormalizeAvatar";
 export default function ProfileInfo() {
   const { user, setUser } = useAuth();
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [avatar, setAvatar] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("/avatars/default.png");
   const [loading, setLoading] = useState(false);
@@ -34,9 +35,18 @@ export default function ProfileInfo() {
       return;
     setLoading(true);
     setMessage("");
+    if (email !== user.email && !password) {
+      setMessage("Pour changer l'email, veuillez entrer votre mot de passe actuel.");
+      setLoading(false);
+      return;
+    }
     try {
       const formData = new FormData();
       formData.append("email", email);
+      if (password)
+        formData.append("currentPassword", password);
+      if (password)
+        formData.append("password", password);
       if (avatar)
         formData.append("avatar", avatar);
       const token = localStorage.getItem("Token");
@@ -56,10 +66,10 @@ export default function ProfileInfo() {
         localStorage.setItem("User", JSON.stringify(updatedUser));
         const normalized = normalizeAvatar(updatedUser.avatar);
         setPreview(normalized);
+        setPassword("");
         setMessage("Profil mis à jour !");
-      } else {
+      } else
         setMessage(data.message || "Erreur lors de la mise à jour");
-      }
     } catch (err) {
       setMessage("Erreur lors de la mise à jour");
     } finally {
@@ -108,6 +118,19 @@ export default function ProfileInfo() {
             className="w-full border border-gray-300 rounded px-3 py-2 text-gray-800"
           />
         </div>
+
+        {email !== user.email && (
+          <div>
+            <label className="block font-medium text-gray-800 mb-1">Mot de passe actuel</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2 text-gray-800"
+              placeholder="Saisissez votre mot de passe pour valider le changement"
+            />
+          </div>
+        )}
 
         <div>
           <label className="block font-medium text-gray-800 mb-1">Rôle</label>

@@ -7,7 +7,8 @@ import {
     getUserByEmail,
     createUser, 
     updateUser, 
-    deleteUser 
+    deleteUser,
+    changePassword
 } from "../handlers/UserHandlers.js";
 
 const router = Router();
@@ -18,6 +19,7 @@ router.get("/", getAllUsers);
 router.get("/email/:email", getUserByEmail);
 router.get("/:id", getUserById);
 router.put("/:id", uploadAvatar, updateUser);
+router.put("/:id/change-password", changePassword);
 router.delete("/:id", deleteUser);
 
 export default router;
