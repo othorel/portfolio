@@ -15,5 +15,5 @@ RUN npm run build
 
 EXPOSE 3001
 
-CMD npx prisma migrate dev --name init && npm run start
+CMD ["sh", "-c", "npx prisma migrate deploy && npm run start"]
 
