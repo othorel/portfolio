@@ -10,26 +10,26 @@ export async function addFriend(friendLogin: string) {
   return data.friendship;
 }
 
-export async function acceptFriend(friendId: number) {
+export async function acceptFriend(friendLogin: string) {
   const data = await apiFetch<{ friendship: Friendship }>("/friends/accept", {
-    method: "POST",
-    body: JSON.stringify({ friendId }),
+    method: "PATCH",
+    body: JSON.stringify({ friendLogin }),
   });
   return data.friendship;
 }
 
-export async function rejectFriend(friendId: number) {
+export async function rejectFriend(friendLogin: string) {
   const data = await apiFetch<{ friendship: Friendship }>("/friends/reject", {
-    method: "POST",
-    body: JSON.stringify({ friendId }),
+    method: "PATCH",
+    body: JSON.stringify({ friendLogin }),
   });
   return data.friendship;
 }
 
-export async function removeFriend(friendId: number) {
+export async function removeFriend(friendLogin: string) {
   await apiFetch("/friends/remove", {
-    method: "POST",
-    body: JSON.stringify({ friendId }),
+    method: "DELETE",
+    body: JSON.stringify({ friendLogin }),
   });
 }
 
@@ -43,3 +43,7 @@ export async function getPendingRequests() {
   return data.requests ?? [];
 }
 
+export async function getUserWithFriends(login: string) {
+  const data = await apiFetch<{ user: User & { friends: User[] } }>(`/friends/user?login=${encodeURIComponent(login)}`);
+  return data.user;
+}

@@ -23,3 +23,11 @@ export interface Friendship {
     avatar?: string;
   };
 }
+
+export interface AddFriendPayload {
+  friendLogin: string;
+}
+
+export interface AcceptRejectFriendPayload {
+  friendLogin: string;
+}

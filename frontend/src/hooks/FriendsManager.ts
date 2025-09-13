@@ -7,7 +7,8 @@ import {
   getFriends as apiGetFriends,
   getPendingRequests as apiGetPendingRequests,
   acceptFriend as apiAcceptFriend,
-  rejectFriend as apiRejectFriend
+  rejectFriend as apiRejectFriend,
+  getUserWithFriends as apiGetUserWithFriends,
 } from "@/api/friends";
 import { User } from "@/types/User";
 import { Friendship } from "@/types/Friendship";
@@ -28,12 +29,12 @@ export function FriendsManager() {
     try {
       const [friendsData, requestsData] = await Promise.all([
         apiGetFriends(),
-        apiGetPendingRequests()
+        apiGetPendingRequests(),
       ]);
       setFriends(friendsData);
       setPendingRequests(requestsData);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "An unknown error occurred");
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
     } finally {
       setLoading(false);
     }
@@ -45,18 +46,18 @@ export function FriendsManager() {
       await apiAddFriend(friendLogin);
       await fetchAll();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "An unknown error occurred");
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
       throw err;
     }
   }
 
-  async function remove(friendId: number) {
+  async function remove(friendLogin: string) {
     setError(null);
     try {
-      await apiRemoveFriend(friendId);
+      await apiRemoveFriend(friendLogin);
       await fetchAll();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "An unknown error occurred");
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
       throw err;
     }
   }
@@ -64,10 +65,11 @@ export function FriendsManager() {
   async function accept(request: Friendship) {
     setError(null);
     try {
-      await apiAcceptFriend(request.friendId);
+      if (!request.user) throw new Error("User login manquant");
+      await apiAcceptFriend(request.user.login);
       await fetchAll();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "An unknown error occurred");
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
       throw err;
     }
   }
@@ -75,10 +77,22 @@ export function FriendsManager() {
   async function reject(request: Friendship) {
     setError(null);
     try {
-      await apiRejectFriend(request.friendId);
-      await fetchAll();
+      if (!request.user) throw new Error("User login manquant");
+      await apiRejectFriend(request.user.login);
+      setPendingRequests((prev) => prev.filter((r) => r.id !== request.id));
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "An unknown error occurred");
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
+      throw err;
+    }
+  }
+
+  async function getUserWithFriends(login: string) {
+    setError(null);
+    try {
+      const user = await apiGetUserWithFriends(login);
+      return user;
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
       throw err;
     }
   }
@@ -92,6 +106,7 @@ export function FriendsManager() {
     add,
     remove,
     accept,
-    reject
+    reject,
+    getUserWithFriends,
   };
 }

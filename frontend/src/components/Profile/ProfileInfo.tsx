@@ -31,24 +31,16 @@ export default function ProfileInfo() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user)
-      return;
+    if (!user) return;
     setLoading(true);
     setMessage("");
-    if (email !== user.email && !password) {
-      setMessage("Pour changer l'email, veuillez entrer votre mot de passe actuel.");
-      setLoading(false);
-      return;
-    }
     try {
       const formData = new FormData();
       formData.append("email", email);
-      if (password)
-        formData.append("currentPassword", password);
-      if (password)
-        formData.append("password", password);
-      if (avatar)
-        formData.append("avatar", avatar);
+      if (password) formData.append("currentPassword", password);
+      if (password) formData.append("password", password);
+      if (avatar) formData.append("avatar", avatar);
+
       const token = localStorage.getItem("Token");
       const res = await fetch(`http://localhost:4000/users/${user.id}`, {
         method: "PUT",
@@ -57,31 +49,25 @@ export default function ProfileInfo() {
       });
       const data = await res.json();
       if (res.ok) {
-        const updatedUser = {
-          ...user,
-          email,
-          avatar: data.user.avatar || null,
-        };
+        const updatedUser = { ...user, email, avatar: data.user.avatar || null };
         setUser(updatedUser);
         localStorage.setItem("User", JSON.stringify(updatedUser));
-        const normalized = normalizeAvatar(updatedUser.avatar);
-        setPreview(normalized);
+        const isDefault = !updatedUser.avatar || updatedUser.avatar.includes("/avatars/default.png");
+        setPreview(isDefault ? "/avatars/default.png" : normalizeAvatar(updatedUser.avatar));
         setPassword("");
         setMessage("Profil mis à jour !");
-      } else
-        setMessage(data.message || "Erreur lors de la mise à jour");
-    } catch (err) {
+      } else setMessage(data.message || "Erreur lors de la mise à jour");
+    } catch {
       setMessage("Erreur lors de la mise à jour");
     } finally {
       setLoading(false);
     }
   };
 
-  if (!user)
-    return <p>Chargement...</p>;
+  if (!user) return <p>Chargement...</p>;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-gray-50 rounded-xl shadow-md flex flex-col gap-6">
+    <div className="max-w-3xl mx-auto p-6 bg-gray-800 rounded-xl shadow-md flex flex-col gap-6 text-white">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="flex flex-col items-center gap-3">
           <img
@@ -90,68 +76,37 @@ export default function ProfileInfo() {
             className="w-28 h-28 rounded-full border-2 border-indigo-500 cursor-pointer"
             onClick={() => document.getElementById("avatarInput")?.click()}
           />
-          <input
-            type="file"
-            id="avatarInput"
-            accept="image/*"
-            onChange={handleAvatarChange}
-            className="hidden"
-          />
+          <input type="file" id="avatarInput" accept="image/*" onChange={handleAvatarChange} className="hidden" />
         </div>
 
         <div>
-          <label className="block font-medium text-gray-800 mb-1">Login</label>
-          <input
-            type="text"
-            value={user.login}
-            disabled
-            className="w-full border border-gray-300 rounded px-3 py-2 bg-gray-100 text-gray-800"
-          />
+          <label className="block font-medium mb-1">Login</label>
+          <input type="text" value={user.login} disabled className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white" />
         </div>
 
         <div>
-          <label className="block font-medium text-gray-800 mb-1">Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full border border-gray-300 rounded px-3 py-2 text-gray-800"
-          />
+          <label className="block font-medium mb-1">Email</label>
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white" />
         </div>
 
         {email !== user.email && (
           <div>
-            <label className="block font-medium text-gray-800 mb-1">Mot de passe actuel</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-gray-300 rounded px-3 py-2 text-gray-800"
-              placeholder="Saisissez votre mot de passe pour valider le changement"
-            />
+            <label className="block font-medium mb-1">Mot de passe actuel</label>
+            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Saisissez votre mot de passe" className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white" />
           </div>
         )}
 
         <div>
-          <label className="block font-medium text-gray-800 mb-1">Rôle</label>
-          <input
-            type="text"
-            value={user.role}
-            disabled
-            className="w-full border border-gray-300 rounded px-3 py-2 bg-gray-100 text-gray-800"
-          />
+          <label className="block font-medium mb-1">Rôle</label>
+          <input type="text" value={user.role} disabled className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white" />
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-indigo-600 text-white py-2 rounded font-semibold hover:bg-indigo-700 transition"
-        >
+        <button type="submit" disabled={loading} className="bg-indigo-500 hover:bg-indigo-600 transition-colors py-2 rounded font-semibold">
           {loading ? "Mise à jour..." : "Mettre à jour"}
         </button>
       </form>
 
-      {message && <p className="text-center text-sm text-gray-700 mt-2">{message}</p>}
+      {message && <p className="text-center text-sm text-gray-300 mt-2">{message}</p>}
     </div>
   );
 }

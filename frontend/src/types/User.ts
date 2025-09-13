@@ -5,4 +5,5 @@ export interface User {
     avatar?: string | null;
     status?: string;
     role: string;
+    friends?: User[];
 }
