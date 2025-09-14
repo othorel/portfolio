@@ -12,8 +12,10 @@ export default function SignUpForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [localError, setLocalError] = useState<string | null>(null);
+
   const router = useRouter();
   const { signup, loading, error } = useAuth();
+
   const hasUpper = /[A-Z]/.test(password);
   const hasLower = /[a-z]/.test(password);
   const hasNumber = /\d/.test(password);
@@ -43,87 +45,83 @@ export default function SignUpForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <input
-        type="text"
-        placeholder="Login"
-        value={loginVal}
-        onChange={(e) => setLoginVal(e.target.value)}
-        className="border rounded px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-        required
-      />
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="border rounded px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-        required
-      />
-      <input
-        type="password"
-        placeholder="Mot de passe"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="border rounded px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-        required
-      />
-      <input
-        type="password"
-        placeholder="Confirmez le mot de passe"
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        className="border rounded px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-        required
-      />
+    <div className="max-w-3xl mx-auto p-6 bg-gray-800 rounded-xl shadow-md flex flex-col gap-6 text-white">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <input
+          type="text"
+          placeholder="Login"
+          value={loginVal}
+          onChange={(e) => setLoginVal(e.target.value)}
+          className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          required
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          required
+        />
+        <input
+          type="password"
+          placeholder="Mot de passe"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          required
+        />
+        <input
+          type="password"
+          placeholder="Confirmez le mot de passe"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          required
+        />
 
-      {(localError || error) && (
-        <p className="text-red-500 text-sm">{localError || error}</p>
-      )}
+        {(localError || error) && (
+          <p className="text-red-500 text-sm">{localError || error}</p>
+        )}
 
-      {/* Règles du mot de passe */}
-      <div className="text-sm text-gray-600">
-        <p>Votre mot de passe doit contenir :</p>
-        <ul className="list-disc list-inside">
-          <li className={hasMinLength ? "text-green-600" : "text-red-500"}>
-            {hasMinLength ? "✅" : "❌"} Minimum 8 caractères
-          </li>
-          <li className={hasUpper ? "text-green-600" : "text-red-500"}>
-            {hasUpper ? "✅" : "❌"} Une majuscule
-          </li>
-          <li className={hasLower ? "text-green-600" : "text-red-500"}>
-            {hasLower ? "✅" : "❌"} Une minuscule
-          </li>
-          <li className={hasNumber ? "text-green-600" : "text-red-500"}>
-            {hasNumber ? "✅" : "❌"} Un chiffre
-          </li>
-          <li className={hasSpecial ? "text-green-600" : "text-red-500"}>
-            {hasSpecial ? "✅" : "❌"} Un caractère spécial (!@#$%^&*)
-          </li>
-        </ul>
-      </div>
+        {password && (
+          <ul className="text-sm list-disc list-inside text-gray-300">
+            <li className={hasMinLength ? "text-green-500" : "text-red-500"}>
+              {hasMinLength ? "✅" : "❌"} Minimum 8 caractères
+            </li>
+            <li className={hasUpper ? "text-green-500" : "text-red-500"}>
+              {hasUpper ? "✅" : "❌"} Une majuscule
+            </li>
+            <li className={hasLower ? "text-green-500" : "text-red-500"}>
+              {hasLower ? "✅" : "❌"} Une minuscule
+            </li>
+            <li className={hasNumber ? "text-green-500" : "text-red-500"}>
+              {hasNumber ? "✅" : "❌"} Un chiffre
+            </li>
+            <li className={hasSpecial ? "text-green-500" : "text-red-500"}>
+              {hasSpecial ? "✅" : "❌"} Un caractère spécial (!@#$%^&*)
+            </li>
+          </ul>
+        )}
 
-      <button
-        type="submit"
-        disabled={loading || !isPasswordValid || password !== confirmPassword}
-        className={`py-2 rounded font-semibold transition ${
-          loading || !isPasswordValid || password !== confirmPassword
-            ? "bg-gray-400 text-gray-700 cursor-not-allowed"
-            : "bg-indigo-600 text-white hover:bg-indigo-700"
-        }`}
-      >
-        {loading ? "Inscription..." : "S’inscrire"}
-      </button>
-
-      <p className="text-center text-gray-500 text-sm mt-2">
-        Déjà un compte ?{" "}
-        <Link
-          href="/login"
-          className="text-indigo-600 font-semibold hover:underline"
+        <button
+          type="submit"
+          disabled={loading || !isPasswordValid || password !== confirmPassword}
+          className="bg-indigo-500 hover:bg-indigo-600 transition-colors py-2 rounded font-semibold"
         >
-          Connectez-vous
-        </Link>
-      </p>
-    </form>
+          {loading ? "Inscription..." : "S’inscrire"}
+        </button>
+
+        <p className="text-center text-gray-300 text-sm mt-2">
+          Déjà un compte ?{" "}
+          <Link
+            href="/login"
+            className="text-indigo-400 font-semibold hover:underline"
+          >
+            Connectez-vous
+          </Link>
+        </p>
+      </form>
+    </div>
   );
 }

@@ -4,6 +4,7 @@ import path from "path";
 import userRoutes from "./routes/UserRoutes.js";
 import friendRoutes from "./routes/FriendRoutes.js";
 import authRoutes from "./routes/AuthRoutes.js";
+import notificationRoutes from "./routes/NotificationRoutes.js";
 
 const app = express();
 
@@ -14,5 +15,6 @@ app.use("/uploads", express.static(path.join(process.cwd(), "src/uploads")));
 app.use("/users", userRoutes);
 app.use("/friends", friendRoutes);
 app.use("/auth", authRoutes);
+app.use("/notifications", notificationRoutes);
 
 export default app;

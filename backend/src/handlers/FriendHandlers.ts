@@ -1,4 +1,3 @@
-// controllers/friendController.ts
 import type { Response } from "express";
 import { FriendRepository } from "../repositories/FriendRepository.js";
 import { AuthenticatedRequest } from "../types/AuthenticatedRequest.js";

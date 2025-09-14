@@ -32,8 +32,7 @@ services:
         condition: service_healthy
     networks:
       - projectcollab-net
-    volumes:
-      - ./backend:/app
+
 
   frontend:
     build:

@@ -26,49 +26,47 @@ export default function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="border rounded px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-        required
-      />
-      <input
-        type="password"
-        placeholder="Mot de passe"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="border rounded px-4 py-2 text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-        required
-      />
+    <div className="max-w-3xl mx-auto p-6 bg-gray-800 rounded-xl shadow-md flex flex-col gap-6 text-white">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          required
+        />
+        <input
+          type="password"
+          placeholder="Mot de passe"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          required
+        />
 
-      {(localError || error) && (
-        <p className="text-red-500 text-sm">{localError || error}</p>
-      )}
+        {(localError || error) && (
+          <p className="text-red-500 text-sm">{localError || error}</p>
+        )}
 
-      <button
-        type="submit"
-        disabled={loading}
-        className={`py-2 rounded font-semibold transition ${
-          loading
-            ? "bg-gray-400 text-gray-700 cursor-not-allowed"
-            : "bg-indigo-600 text-white hover:bg-indigo-700"
-        }`}
-      >
-        {loading ? "Connexion..." : "Se connecter"}
-      </button>
-
-      <p className="text-center text-gray-500 text-sm mt-2">
-        Pas encore de compte ?{" "}
-        <Link
-          href="/signup"
-          className="text-indigo-600 font-semibold hover:underline"
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-indigo-500 hover:bg-indigo-600 transition-colors py-2 rounded font-semibold"
         >
-          Inscrivez-vous
-        </Link>
-      </p>
-    </form>
+          {loading ? "Connexion..." : "Se connecter"}
+        </button>
+
+        <p className="text-center text-gray-300 text-sm mt-2">
+          Pas encore de compte ?{" "}
+          <Link
+            href="/signup"
+            className="text-indigo-400 font-semibold hover:underline"
+          >
+            Inscrivez-vous
+          </Link>
+        </p>
+      </form>
+    </div>
   );
 }

@@ -1,10 +1,10 @@
-import { PrismaClient, User } from "@prisma/client";
+import { User } from "@prisma/client";
+import { prisma } from "../prismaClient.js";
 import { randomBytes, scrypt as _scrypt } from "crypto";
 import { promisify } from "util";
 import { generateToken } from "../utils/JwtUtils.js";
 
-const DEFAULT_AVATAR = "/avatars/default.png";
-const prisma = new PrismaClient();
+const DEFAULT_AVATAR = process.env.DEFAULT_AVATAR;
 const scrypt = promisify(_scrypt);
 
 export class AuthRepository {
