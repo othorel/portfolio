@@ -2,7 +2,6 @@ import { prisma } from "../prismaClient.js";
 import { Notification } from "@prisma/client";
 
 export class NotificationRepository {
-
   async createNotification(userId: number, message: string): Promise<Notification> {
     return prisma.notification.create({
       data: {
@@ -29,6 +28,25 @@ export class NotificationRepository {
   async deleteNotification(notificationId: number): Promise<void> {
     await prisma.notification.delete({
       where: { id: notificationId },
+    });
+  }
+
+  async getUnreadCount(userId: number): Promise<number> {
+    return prisma.notification.count({
+      where: { 
+        userId, 
+        read: false 
+      },
+    });
+  }
+
+  async markAllAsRead(userId: number): Promise<{ count: number }> {
+    return prisma.notification.updateMany({
+      where: { 
+        userId, 
+        read: false 
+      },
+      data: { read: true },
     });
   }
 }

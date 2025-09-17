@@ -23,4 +23,3 @@ router.put("/:id/change-password", changePassword);
 router.delete("/:id", deleteUser);
 
 export default router;
-

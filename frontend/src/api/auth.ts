@@ -6,7 +6,6 @@ export async function login(email: string, password: string): Promise<AuthRespon
     method: "POST",
     body: JSON.stringify({ email, password }),
   });
-
   if (data.token) {
     localStorage.setItem("Token", data.token);
     localStorage.setItem("User", JSON.stringify(data.user));
@@ -19,12 +18,10 @@ export async function signup(login: string, email: string, password: string): Pr
     method: "POST",
     body: JSON.stringify({ login, email, password }),
   });
-
   if (data.token) {
     localStorage.setItem("Token", data.token);
     localStorage.setItem("User", JSON.stringify(data.user));
   }
-
   return data;
 }
 

@@ -6,18 +6,20 @@ import {
     getFriends,
     acceptFriend,
     rejectFriend,
-    getPendingRequests,   
+    getPendingRequests,
+    getSentRequests,   
     getUserWithFriends
 } from "../handlers/FriendHandlers.js";
 
 const router = Router();
 
 router.use(authenticate);
-router.post("/add", addFriend);
+router.post("/add", express.json(), addFriend);
 router.delete("/remove", express.json(), removeFriend);
-router.patch("/accept", acceptFriend);
-router.patch("/reject", rejectFriend);
-router.get("/requests", getPendingRequests);
+router.patch("/accept", express.json(), acceptFriend);
+router.patch("/reject", express.json(), rejectFriend);
+router.get("/requests/pending", getPendingRequests);
+router.get("/requests/sent", getSentRequests);
 router.get("/", getFriends);
 router.get("/user", getUserWithFriends);
 

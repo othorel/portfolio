@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   getUserNotifications as apiGetNotifications,
   markNotificationAsRead as apiMarkAsRead,
@@ -13,11 +13,7 @@ export function useNotificationsManager() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchAll();
-  }, []);
-
-  async function fetchAll() {
+  const fetchAll = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -28,9 +24,9 @@ export function useNotificationsManager() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
-  async function markAsRead(notificationId: number) {
+  const markAsRead = useCallback(async (notificationId: number) => {
     setError(null);
     try {
       const updated = await apiMarkAsRead(notificationId);
@@ -41,9 +37,9 @@ export function useNotificationsManager() {
       setError(err instanceof Error ? err.message : "Erreur inconnue");
       throw err;
     }
-  }
+  }, []);
 
-  async function remove(notificationId: number) {
+  const remove = useCallback(async (notificationId: number) => {
     setError(null);
     try {
       await apiDeleteNotification(notificationId);
@@ -54,7 +50,11 @@ export function useNotificationsManager() {
       setError(err instanceof Error ? err.message : "Erreur inconnue");
       throw err;
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    fetchAll();
+  }, [fetchAll]);
 
   return {
     notifications,

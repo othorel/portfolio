@@ -17,9 +17,8 @@ export const getAllUsers = async (_req: Request, res: Response) => {
 export const getUserById = async (req: Request, res: Response) => {
   const { id } = req.params;
   const userId = parseInt(id, 10);
-  if (isNaN(userId)) {
+  if (isNaN(userId))
     return res.status(400).json({ success: false, message: "User ID must be a number" });
-  }
   try {
     const user = await userRepo.getByIdUser(userId);
     if (!user) 
@@ -46,9 +45,8 @@ export const getUserByEmail = async (req: Request, res: Response) => {
 
 export const createUser = async (req: Request, res: Response) => {
   const { login, email, password, avatar } = req.body;
-  if (!login || !email || !password) {
+  if (!login || !email || !password)
     return res.status(400).json({ success: false, message: "Login, email and password are required" });
-  }
   try {
     const user = await userRepo.createUser({ login, email, password, avatar });
     res.status(201).json({ success: true, user });

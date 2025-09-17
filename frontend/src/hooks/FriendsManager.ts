@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   addFriend as apiAddFriend,
   removeFriend as apiRemoveFriend,
@@ -19,11 +19,7 @@ export function FriendsManager() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchAll();
-  }, []);
-
-  async function fetchAll() {
+  const fetchAll = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -38,9 +34,9 @@ export function FriendsManager() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
-  async function add(friendLogin: string) {
+  const add = useCallback(async (friendLogin: string) => {
     setError(null);
     try {
       await apiAddFriend(friendLogin);
@@ -49,9 +45,9 @@ export function FriendsManager() {
       setError(err instanceof Error ? err.message : "Erreur inconnue");
       throw err;
     }
-  }
+  }, [fetchAll]);
 
-  async function remove(friendLogin: string) {
+  const remove = useCallback(async (friendLogin: string) => {
     setError(null);
     try {
       await apiRemoveFriend(friendLogin);
@@ -60,33 +56,33 @@ export function FriendsManager() {
       setError(err instanceof Error ? err.message : "Erreur inconnue");
       throw err;
     }
-  }
+  }, [fetchAll]);
 
-  async function accept(request: Friendship) {
+  const accept = useCallback(async (request: Friendship) => {
     setError(null);
     try {
-      if (!request.user) throw new Error("User login manquant");
+      if (!request.user) throw new Error("Utilisateur introuvable");
       await apiAcceptFriend(request.user.login);
       await fetchAll();
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Erreur inconnue");
       throw err;
     }
-  }
+  }, [fetchAll]);
 
-  async function reject(request: Friendship) {
+  const reject = useCallback(async (request: Friendship) => {
     setError(null);
     try {
-      if (!request.user) throw new Error("User login manquant");
+      if (!request.user) throw new Error("Utilisateur introuvable");
       await apiRejectFriend(request.user.login);
       setPendingRequests((prev) => prev.filter((r) => r.id !== request.id));
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Erreur inconnue");
       throw err;
     }
-  }
+  }, []);
 
-  async function getUserWithFriends(login: string) {
+  const getUserWithFriends = useCallback(async (login: string) => {
     setError(null);
     try {
       const user = await apiGetUserWithFriends(login);
@@ -95,7 +91,11 @@ export function FriendsManager() {
       setError(err instanceof Error ? err.message : "Erreur inconnue");
       throw err;
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    fetchAll();
+  }, [fetchAll]);
 
   return {
     friends,

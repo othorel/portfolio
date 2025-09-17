@@ -5,4 +5,6 @@ export interface Notification {
   read: boolean;
   createdAt: string;
   updatedAt: string;
+  type?: string;
+  data: Record<string, unknown>;
 }

@@ -39,7 +39,12 @@ export async function getFriends() {
 }
 
 export async function getPendingRequests() {
-  const data = await apiFetch<{ requests: Friendship[] }>("/friends/requests");
+  const data = await apiFetch<{ requests: Friendship[] }>("/friends/requests/pending");
+  return data.requests ?? [];
+}
+
+export async function getSentRequests() {
+  const data = await apiFetch<{ requests: Friendship[] }>("/friends/requests/sent");
   return data.requests ?? [];
 }
 

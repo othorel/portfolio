@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FriendsManager } from "@/hooks/FriendsManager";
 import { useAuth } from "@/context/AuthContext";
 import { Friendship } from "@/types/Friendship";
 import { User } from "@/types/User";
 import { normalizeAvatar } from "@/utils/NormalizeAvatar";
+import ConfirmModal from "../ConfirmModal";
 
 export default function ProfileFriends() {
   const { user } = useAuth();
@@ -25,6 +26,8 @@ export default function ProfileFriends() {
   const [actionLoading, setActionLoading] = useState<boolean>(false);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [selectedFriend, setSelectedFriend] = useState<User | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [pendingRemoveFriend, setPendingRemoveFriend] = useState<User | null>(null);
 
   const resolveAvatar = (avatar?: string | null) => {
     const isDefault = !avatar || avatar.includes("/avatars/default.png");
@@ -36,7 +39,8 @@ export default function ProfileFriends() {
     setActionMessage(null);
     try {
       await fn();
-      if (successMsg) setActionMessage(successMsg);
+      if (successMsg)
+        setActionMessage(successMsg);
     } catch (err) {
       console.error(err);
       setActionMessage(err instanceof Error ? err.message : "Erreur inconnue");
@@ -46,7 +50,10 @@ export default function ProfileFriends() {
   };
 
   const handleAddFriend = () => {
-    if (!friendLogin.trim()) return;
+    if (!friendLogin.trim() || friendLogin.trim() === user?.login) {
+      setActionMessage("Vous ne pouvez pas vous ajouter vous-même");
+      return;
+    }
     handleAction(
       () => add(friendLogin.trim()), 
       `Demande envoyée à ${friendLogin.trim()}`
@@ -54,16 +61,33 @@ export default function ProfileFriends() {
     setFriendLogin("");
   };
 
-  const handleRemove = (friend: User) =>
-    handleAction(() => remove(friend.login), `${friend.login} retiré(e) de vos amis`);
+  const handleRemove = (friend: User) => {
+    setPendingRemoveFriend(friend);
+    setModalOpen(true);
+  };
+
+  const confirmRemove = () => {
+    if (pendingRemoveFriend) {
+      handleAction(() => remove(pendingRemoveFriend.login), `${pendingRemoveFriend.login} retiré(e) de vos amis`);
+      setPendingRemoveFriend(null);
+      setModalOpen(false);
+    }
+  };
+
+  const cancelRemove = () => {
+    setPendingRemoveFriend(null);
+    setModalOpen(false);
+  };
 
   const handleAccept = (request: Friendship) => {
-    if (!request.user) return;
+    if (!request.user)
+      return;
     handleAction(() => accept(request), `Vous êtes maintenant ami avec ${request.user.login}`);
   };
 
   const handleReject = (request: Friendship) => {
-    if (!request.user) return;
+    if (!request.user)
+      return;
     handleAction(() => reject(request), `Demande de ${request.user.login} refusée`);
   };
 
@@ -90,13 +114,24 @@ export default function ProfileFriends() {
 
   return (
     <div className="w-full flex justify-center p-8 font-sans text-white">
-      {/* Gros bloc arrondi et centré */}
       <div className="max-w-5xl w-full bg-gray-800 p-6 rounded-xl shadow-md space-y-8">
-        {error && <div className="bg-red-600 p-2 rounded">{error}</div>}
-        {actionMessage && <div className="bg-green-600 p-2 rounded">{actionMessage}</div>}
+        
+        {(error || actionMessage) && (
+          <div
+            className={`p-2 rounded font-medium ${
+              error ||
+              actionMessage?.toLowerCase().includes("erreur") ||
+              actionMessage?.toLowerCase().includes("introuvable")
+                ? "bg-red-600 text-white"
+                : "bg-green-600 text-white"
+            }`}
+          >
+            {error ?? actionMessage}
+          </div>
+        )}
+
         {(loading || actionLoading) && <div className="text-gray-300">Chargement...</div>}
 
-        {/* Ajouter un ami */}
         <div className="bg-gray-800 p-4 rounded-xl shadow-md flex gap-4 items-center">
           <input
             type="text"
@@ -114,9 +149,7 @@ export default function ProfileFriends() {
           </button>
         </div>
 
-        {/* Listes amis & demandes */}
         <div className="grid md:grid-cols-2 gap-6">
-          {/* Amis */}
           <div>
             <h2 className="text-2xl font-semibold mb-4">Amis ({friends.length})</h2>
             <div className="space-y-4">
@@ -156,7 +189,6 @@ export default function ProfileFriends() {
             </div>
           </div>
 
-          {/* Demandes en attente */}
           <div>
             <h2 className="text-2xl font-semibold mb-4">Demandes en attente ({pendingRequests.length})</h2>
             <div className="space-y-4">
@@ -197,7 +229,6 @@ export default function ProfileFriends() {
           </div>
         </div>
 
-        {/* Détails d'un ami sélectionné */}
         {selectedFriend && (
           <div className="mt-8 bg-gray-800 p-6 rounded-xl shadow-md">
             <button
@@ -217,7 +248,7 @@ export default function ProfileFriends() {
                 <p className="text-gray-300">{selectedFriend.email}</p>
               </div>
             </div>
-            {/* Liste des amis de l'ami */}
+
             <div className="mt-6">
               <h4 className="text-xl font-semibold mb-2">Ses amis</h4>
               <div className="flex flex-wrap gap-3">
@@ -241,6 +272,14 @@ export default function ProfileFriends() {
               </div>
             </div>
           </div>
+        )}
+
+        {modalOpen && pendingRemoveFriend && (
+          <ConfirmModal
+            message={`Voulez-vous vraiment retirer ${pendingRemoveFriend.login} de vos amis ?`}
+            onConfirm={confirmRemove}
+            onCancel={cancelRemove}
+          />
         )}
       </div>
     </div>

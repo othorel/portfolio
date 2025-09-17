@@ -1,3 +1,4 @@
+// components/Navbar.tsx - Amélioration
 "use client";
 
 import Link from "next/link";
@@ -5,7 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { normalizeAvatar } from "@/utils/NormalizeAvatar";
-import { Bell } from "lucide-react";
+import { Bell, Check, X, Clock } from "lucide-react";
 import { useNotificationsManager } from "@/hooks/NotificationsManager";
 import { Notification } from "@/types/Notifications";
 
@@ -21,6 +22,7 @@ export default function Navbar() {
 
   const {
     notifications,
+    loading: notifLoading,
     fetchAll: fetchNotifications,
     markAsRead,
     remove: removeNotification,
@@ -31,12 +33,15 @@ export default function Navbar() {
   // Polling notifications toutes les 10 secondes
   useEffect(() => {
     if (!user) return;
+
     fetchNotifications(); // fetch initial
+
     const interval = setInterval(() => {
       fetchNotifications();
     }, 10000);
+
     return () => clearInterval(interval);
-  }, [user]);
+  }, [user, fetchNotifications]);
 
   // Gestion avatar
   useEffect(() => {
@@ -56,9 +61,25 @@ export default function Navbar() {
         setNotifOpen(false);
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleNotificationAction = async (notification: Notification) => {
+    if (notification.message.includes("demande d'ami")) {
+      // Rediriger vers la page des amis pour gérer la demande
+      router.push("/friends");
+      setNotifOpen(false);
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleTimeString("fr-FR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   if (!user) {
     return (
@@ -67,10 +88,16 @@ export default function Navbar() {
           Project Collab
         </Link>
         <div className="flex gap-4">
-          <Link href="/login" className="text-indigo-600 font-semibold hover:underline">
+          <Link
+            href="/login"
+            className="text-indigo-600 font-semibold hover:underline"
+          >
             Login
           </Link>
-          <Link href="/signup" className="text-indigo-600 font-semibold hover:underline">
+          <Link
+            href="/signup"
+            className="text-indigo-600 font-semibold hover:underline"
+          >
             Sign Up
           </Link>
         </div>
@@ -84,86 +111,147 @@ export default function Navbar() {
         Project Collab
       </Link>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-6">
         {/* Notifications */}
         <div className="relative" ref={notifRef}>
-          <Bell
-            className="w-6 h-6 cursor-pointer text-gray-700"
+          <div
+            className="relative cursor-pointer"
             onClick={() => setNotifOpen(!notifOpen)}
-          />
-          {unreadCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-              {unreadCount}
-            </span>
-          )}
+          >
+            <Bell className="w-6 h-6 text-gray-700" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                {unreadCount}
+              </span>
+            )}
+          </div>
 
           {notifOpen && (
-            <div className="absolute right-0 mt-2 w-80 bg-white rounded shadow-lg p-2 z-50 max-h-96 overflow-auto">
-              {notifications.length === 0 ? (
-                <p className="text-sm text-gray-500">Pas de notifications</p>
+            <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-96 overflow-auto">
+              <div className="p-3 border-b border-gray-200">
+                <h3 className="font-semibold text-gray-800">Notifications</h3>
+              </div>
+
+              {notifLoading ? (
+                <div className="p-4 text-center">
+                  <Clock className="w-5 h-5 animate-spin mx-auto text-gray-400" />
+                </div>
+              ) : notifications.length === 0 ? (
+                <p className="p-4 text-sm text-gray-500 text-center">
+                  Aucune notification
+                </p>
               ) : (
-                notifications.map((n: Notification) => (
-                  <div
-                    key={n.id}
-                    className="flex justify-between items-center p-2 hover:bg-gray-100 rounded"
-                  >
-                    <span className={`text-sm ${n.read ? "text-gray-400" : "font-semibold"}`}>
-                      {n.message}
-                    </span>
-                    <div className="flex gap-1">
-                      {!n.read && (
-                        <button
-                          onClick={() => markAsRead(n.id)}
-                          className="text-green-500 hover:underline text-xs"
-                        >
-                          Marquer lu
-                        </button>
-                      )}
-                      <button
-                        onClick={() => removeNotification(n.id)}
-                        className="text-red-500 hover:underline text-xs"
-                      >
-                        Supprimer
-                      </button>
+                <div className="divide-y divide-gray-100">
+                  {notifications.map((notification: Notification) => (
+                    <div
+                      key={notification.id}
+                      className={`p-3 hover:bg-gray-50 cursor-pointer transition-colors ${
+                        !notification.read ? "bg-blue-50" : ""
+                      }`}
+                      onClick={() => handleNotificationAction(notification)}
+                    >
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <p
+                            className={`text-sm ${
+                              notification.read
+                                ? "text-gray-600"
+                                : "font-semibold text-gray-900"
+                            }`}
+                          >
+                            {notification.message}
+                          </p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            {formatDate(notification.createdAt)}
+                          </p>
+                        </div>
+                        <div className="flex gap-2 ml-2">
+                          {!notification.read && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                markAsRead(notification.id);
+                              }}
+                              className="p-1 hover:bg-green-100 rounded transition-colors"
+                              title="Marquer comme lu"
+                            >
+                              <Check className="w-4 h-4 text-green-600" />
+                            </button>
+                          )}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeNotification(notification.id);
+                            }}
+                            className="p-1 hover:bg-red-100 rounded transition-colors"
+                            title="Supprimer"
+                          >
+                            <X className="w-4 h-4 text-red-600" />
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ))
+                  ))}
+                </div>
               )}
             </div>
           )}
         </div>
 
-        {/* Avatar */}
+        {/* Avatar et menu */}
         <div className="relative" ref={menuRef}>
           {avatarUrl && (
             <img
               src={avatarUrl}
               alt="Avatar"
-              className="w-10 h-10 rounded-full cursor-pointer border-2 border-indigo-500"
+              className="w-10 h-10 rounded-full cursor-pointer border-2 border-indigo-500 hover:border-indigo-600 transition-colors"
               onClick={() => setMenuOpen(!menuOpen)}
               onError={handleImgError}
             />
           )}
+
           {menuOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded shadow-lg p-2 z-50">
-              <button
-                onClick={() => { router.push("/profile"); setMenuOpen(false); }}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100"
-              >
-                Mon profil
-              </button>
-              <button
-                onClick={() => { router.push("/friends"); setMenuOpen(false); }}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100"
-              >
-                Collaborateurs
-              </button>
-              <button
-                onClick={() => { logout(); setMenuOpen(false); }}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100"
-              >
-                Déconnexion
-              </button>
+            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+              <div className="p-2">
+                <div className="px-3 py-2 border-b border-gray-100">
+                  <p className="text-sm font-medium text-gray-800">
+                    {user.login}
+                  </p>
+                  <p className="text-xs text-gray-500">{user.email}</p>
+                </div>
+
+                <button
+                  onClick={() => {
+                    router.push("/profile");
+                    setMenuOpen(false);
+                  }}
+                  className="w-full text-left px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-100 rounded-md transition-colors"
+                >
+                  👤 Mon profil
+                </button>
+
+                <button
+                  onClick={() => {
+                    router.push("/friends");
+                    setMenuOpen(false);
+                  }}
+                  className="w-full text-left px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-100 rounded-md transition-colors"
+                >
+                  👥 Collaborateurs
+                </button>
+
+                {/* ⚙️ Paramètres supprimé */}
+
+                <button
+                  onClick={() => {
+                    logout();
+                    setMenuOpen(false);
+                  }}
+                  className="w-full text-left px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors mt-1"
+                >
+                  🚪 Déconnexion
+                </button>
+              </div>
             </div>
           )}
         </div>

@@ -1,51 +1,57 @@
-// repositories/FriendRepository.ts
 import { prisma } from "../prismaClient.js";
-import { Friendship, FriendshipStatus } from "@prisma/client";
+import { NotificationRepository } from "./NotificationRepository.js";
+import { Friendship, FriendshipStatus, User } from "@prisma/client";
+
+const notificationRepo = new NotificationRepository();
 
 export class FriendRepository {
-
-  private async getUserByLogin(login: string) {
+  private async getUserByLogin(login: string): Promise<User> {
     const user = await prisma.user.findUnique({ where: { login } });
     if (!user)
       throw new Error("Utilisateur introuvable");
     return user;
   }
 
-  async addFriend(userId: number, friendLogin: string): Promise<Friendship> {
-  const friend = await this.getUserByLogin(friendLogin);
-
-  // Supprime toute demande REJECTED précédente
-  await prisma.friendship.deleteMany({
-    where: {
-      OR: [
-        { userId, friendId: friend.id, status: FriendshipStatus.REJECTED },
-        { userId: friend.id, friendId: userId, status: FriendshipStatus.REJECTED },
-      ],
-    },
-  });
-
-  // Vérifie si une demande PENDING ou ACCEPTED existe
-  const existing = await prisma.friendship.findFirst({
-    where: {
-      OR: [
-        { userId, friendId: friend.id },
-        { userId: friend.id, friendId: userId },
-      ],
-      status: {
-        in: [FriendshipStatus.PENDING, FriendshipStatus.ACCEPTED],
-      },
-    },
-  });
-
-  if (existing) {
-    throw new Error("Une demande existe déjà ou vous êtes déjà amis");
+  private async getUserById(id: number): Promise<User> {
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user)
+      throw new Error("Utilisateur introuvable");
+    return user;
   }
 
-  // Crée une nouvelle demande
-  return prisma.friendship.create({
-    data: { userId, friendId: friend.id, status: FriendshipStatus.PENDING },
-  });
-}
+  async addFriend(userId: number, friendLogin: string): Promise<Friendship> {
+    const friend = await this.getUserByLogin(friendLogin);
+    const sender = await this.getUserById(userId);
+    await prisma.friendship.deleteMany({
+      where: {
+        OR: [
+          { userId, friendId: friend.id, status: FriendshipStatus.REJECTED },
+          { userId: friend.id, friendId: userId, status: FriendshipStatus.REJECTED },
+        ],
+      },
+    });
+
+    const existing = await prisma.friendship.findMany({
+      where: {
+        OR: [
+          { userId, friendId: friend.id },
+          { userId: friend.id, friendId: userId },
+        ],
+      },
+    });
+
+    const blocking = existing.find(e => e.status === FriendshipStatus.PENDING || e.status === FriendshipStatus.ACCEPTED);
+    if (blocking)
+      throw new Error("Une demande existe déjà ou vous êtes déjà amis");
+    const newFriendship = await prisma.friendship.create({
+      data: { userId, friendId: friend.id, status: FriendshipStatus.PENDING },
+    });
+    await notificationRepo.createNotification(
+      friend.id,
+      `Vous avez reçu une demande d'ami de ${sender.login}`
+    );
+    return newFriendship;
+  }
 
   async acceptFriend(userId: number, friendLogin: string): Promise<Friendship> {
     const friend = await this.getUserByLogin(friendLogin);
@@ -59,25 +65,43 @@ export class FriendRepository {
       },
     });
     if (!friendship)
-      throw new Error("Friendship not found");
-
-    return prisma.friendship.update({
+      throw new Error("Demande introuvable");
+    const updatedFriendship = await prisma.friendship.update({
       where: { id: friendship.id },
       data: { status: FriendshipStatus.ACCEPTED },
     });
+
+    const sender = await this.getUserById(friendship.userId === userId ? friendship.friendId : friendship.userId);
+    await notificationRepo.createNotification(
+      sender.id,
+      `Votre demande d'ami a été acceptée par ${friendLogin}`
+    );
+    return updatedFriendship;
   }
 
   async rejectFriend(userId: number, friendLogin: string): Promise<void> {
-  const friend = await this.getUserByLogin(friendLogin);
-  await prisma.friendship.deleteMany({
-    where: {
-      OR: [
-        { userId, friendId: friend.id, status: FriendshipStatus.PENDING },
-        { userId: friend.id, friendId: userId, status: FriendshipStatus.PENDING },
-      ],
-    },
-  });
-}
+    const friend = await this.getUserByLogin(friendLogin);
+    const friendship = await prisma.friendship.findFirst({
+      where: {
+        OR: [
+          { userId, friendId: friend.id },
+          { userId: friend.id, friendId: userId },
+        ],
+        status: FriendshipStatus.PENDING,
+      },
+    });
+    if (friendship) {
+      await prisma.friendship.update({
+        where: { id: friendship.id },
+        data: { status: FriendshipStatus.REJECTED },
+      });
+      const sender = await this.getUserById(friendship.userId === userId ? friendship.friendId : friendship.userId);
+      await notificationRepo.createNotification(
+        sender.id,
+        `Votre demande d'ami a été refusée par ${friend.login}`
+      );
+    }
+  }
 
   async removeFriend(userId: number, friendLogin: string): Promise<void> {
     const friend = await this.getUserByLogin(friendLogin);
@@ -91,7 +115,7 @@ export class FriendRepository {
     });
   }
 
-  async getFriends(userId: number) {
+  async getFriends(userId: number): Promise<User[]> {
     const friendships = await prisma.friendship.findMany({
       where: {
         OR: [
@@ -101,10 +125,7 @@ export class FriendRepository {
       },
       include: { user: true, friend: true },
     });
-
-    return friendships
-      .map(f => (f.userId === userId ? f.friend : f.user))
-      .filter(Boolean);
+    return friendships.map(f => (f.userId === userId ? f.friend : f.user)).filter(Boolean) as User[];
   }
 
   async getPendingRequests(userId: number) {
@@ -118,5 +139,15 @@ export class FriendRepository {
     const user = await this.getUserByLogin(login);
     const friends = await this.getFriends(user.id);
     return { ...user, friends };
+  }
+
+  async getSentRequests(userId: number) {
+    return prisma.friendship.findMany({
+      where: { 
+        userId, 
+        status: FriendshipStatus.PENDING 
+      },
+      include: { friend: true },
+    });
   }
 }
