@@ -52,6 +52,10 @@ export function useNotificationsManager() {
     }
   }, []);
 
+  const addNotification = useCallback((notification: Notification) => {
+    setNotifications(prev => [notification, ...prev]);
+  }, []);
+
   useEffect(() => {
     fetchAll();
   }, [fetchAll]);
@@ -63,5 +67,6 @@ export function useNotificationsManager() {
     fetchAll,
     markAsRead,
     remove,
+    addNotification,
   };
 }

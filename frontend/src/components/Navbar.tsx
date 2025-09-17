@@ -1,4 +1,3 @@
-// components/Navbar.tsx - Amélioration
 "use client";
 
 import Link from "next/link";
@@ -9,13 +8,13 @@ import { normalizeAvatar } from "@/utils/NormalizeAvatar";
 import { Bell, Check, X, Clock } from "lucide-react";
 import { useNotificationsManager } from "@/hooks/NotificationsManager";
 import { Notification } from "@/types/Notifications";
+import { connectSocket } from "@/utils/Socket";
 
 export default function Navbar() {
-  const { user, logout } = useAuth();
+  const { user, token, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-
   const menuRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -26,32 +25,38 @@ export default function Navbar() {
     fetchAll: fetchNotifications,
     markAsRead,
     remove: removeNotification,
+    addNotification,
   } = useNotificationsManager();
 
   const unreadCount = notifications.filter((n: Notification) => !n.read).length;
 
-  // Polling notifications toutes les 10 secondes
   useEffect(() => {
-    if (!user) return;
+    if (!user || !token)
+      return;
+    const socket = connectSocket(token);
+    socket.on("new-notification", (notification: Notification) => {
+      addNotification(notification);
+    });
+    return () => {
+      socket.off("new-notification");
+    };
+  }, [user, token, addNotification]);
 
-    fetchNotifications(); // fetch initial
-
-    const interval = setInterval(() => {
-      fetchNotifications();
-    }, 10000);
-
-    return () => clearInterval(interval);
+  useEffect(() => {
+    if (!user)
+      return;
+    fetchNotifications();
   }, [user, fetchNotifications]);
 
-  // Gestion avatar
   useEffect(() => {
-    if (user) setAvatarUrl(normalizeAvatar(user.avatar));
-    else setAvatarUrl(null);
+    if (user)
+      setAvatarUrl(normalizeAvatar(user.avatar));
+    else 
+      setAvatarUrl(null);
   }, [user]);
 
   const handleImgError = () => setAvatarUrl("/avatars/default.png");
 
-  // Gestion clics à l'extérieur
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -61,25 +66,22 @@ export default function Navbar() {
         setNotifOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   const handleNotificationAction = async (notification: Notification) => {
     if (notification.message.includes("demande d'ami")) {
-      // Rediriger vers la page des amis pour gérer la demande
       router.push("/friends");
       setNotifOpen(false);
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString("fr-FR", {
+  const formatDate = (dateString: string) =>
+    new Date(dateString).toLocaleTimeString("fr-FR", {
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
 
   if (!user) {
     return (
@@ -112,7 +114,6 @@ export default function Navbar() {
       </Link>
 
       <div className="flex items-center gap-6">
-        {/* Notifications */}
         <div className="relative" ref={notifRef}>
           <div
             className="relative cursor-pointer"
@@ -198,7 +199,6 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Avatar et menu */}
         <div className="relative" ref={menuRef}>
           {avatarUrl && (
             <img
@@ -214,9 +214,7 @@ export default function Navbar() {
             <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
               <div className="p-2">
                 <div className="px-3 py-2 border-b border-gray-100">
-                  <p className="text-sm font-medium text-gray-800">
-                    {user.login}
-                  </p>
+                  <p className="text-sm font-medium text-gray-800">{user.login}</p>
                   <p className="text-xs text-gray-500">{user.email}</p>
                 </div>
 
@@ -239,8 +237,6 @@ export default function Navbar() {
                 >
                   👥 Collaborateurs
                 </button>
-
-                {/* ⚙️ Paramètres supprimé */}
 
                 <button
                   onClick={() => {
