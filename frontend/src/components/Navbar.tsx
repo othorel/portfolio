@@ -87,7 +87,7 @@ export default function Navbar() {
     return (
       <nav className="w-full bg-white shadow-md px-8 py-4 flex justify-between items-center">
         <Link href="/" className="text-2xl font-bold text-indigo-600">
-          Project Collab
+          Portfolio
         </Link>
         <div className="flex gap-4">
           <Link
@@ -110,7 +110,7 @@ export default function Navbar() {
   return (
     <nav className="w-full bg-white shadow-md px-8 py-4 flex justify-between items-center">
       <Link href="/" className="text-2xl font-bold text-indigo-600">
-        Project Collab
+        Portfolio
       </Link>
 
       <div className="flex items-center gap-6">

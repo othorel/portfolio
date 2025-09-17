@@ -2,58 +2,97 @@
 
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { FaGithub, FaLinkedin, FaFileAlt } from "react-icons/fa";
 
 export default function Hero() {
   const { user } = useAuth();
 
-  if (user) {
-    return (
-      <header className="flex-1 flex flex-col items-center justify-center text-center bg-gradient-to-r from-green-500 via-teal-500 to-blue-500 text-white px-6">
-        <h2 className="text-5xl md:text-6xl font-extrabold mb-6">
-          Bonjour, {user.login} !
-        </h2>
-        <p className="text-xl md:text-2xl mb-8 max-w-2xl">
-          Voici votre tableau de bord pour gérer vos projets et vos équipes.
-        </p>
-        <div className="flex gap-6">
-          <Link
-            href="/projects"
-            className="px-6 py-3 bg-white text-green-600 font-semibold rounded-lg shadow-md hover:bg-gray-100 transition"
-          >
-            Voir mes projets
-          </Link>
-          <Link
-            href="/profile"
-            className="px-6 py-3 bg-white text-green-600 font-semibold rounded-lg shadow-md hover:bg-gray-100 transition"
-          >
-            Mon profil
-          </Link>
-        </div>
-      </header>
-    );
-  }
-
   return (
-    <header className="flex-1 flex flex-col items-center justify-center text-center bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white px-6">
-      <h2 className="text-5xl md:text-6xl font-extrabold mb-6">
-        Bienvenue sur Project Collab
-      </h2>
-      <p className="text-xl md:text-2xl mb-8 max-w-2xl">
-        Collaborez facilement avec vos équipes, gérez vos utilisateurs et projets en toute simplicité.
-      </p>
-      <div className="flex gap-6">
-        <Link
-          href="/login"
-          className="px-6 py-3 bg-white text-indigo-600 font-semibold rounded-lg shadow-md hover:bg-gray-100 transition"
+    <header className="flex-1 flex flex-col items-center justify-center text-center px-6 text-white bg-gradient-to-br from-indigo-700 via-purple-600 to-pink-500">
+      {user ? (
+        <>
+          <h2 className="text-5xl md:text-6xl font-extrabold mb-6">
+            Bonjour, <span className="text-indigo-300">{user.login}</span>
+          </h2>
+          <p className="text-xl md:text-2xl mb-8 max-w-2xl">
+            Bienvenue dans la démo technique : testez la gestion de profil, les projets et les relations d’amis.
+          </p>
+          <div className="flex gap-4 flex-wrap justify-center mb-6">
+            <Link
+              href="/projects"
+              className="px-6 py-3 rounded-full bg-white text-indigo-600 font-medium shadow-md hover:shadow-lg hover:scale-105 transition-transform"
+            >
+              Voir mes projets
+            </Link>
+
+            <Link
+              href="/profile"
+              className="px-6 py-3 rounded-full bg-white text-indigo-600 font-medium shadow-md hover:shadow-lg hover:scale-105 transition-transform"
+            >
+              Mon profil
+            </Link>
+
+            <Link
+              href="/friends"
+              className="px-6 py-3 rounded-full bg-white text-indigo-600 font-medium shadow-md hover:shadow-lg hover:scale-105 transition-transform"
+            >
+              Mes amis
+            </Link>
+          </div>
+        </>
+      ) : (
+        <>
+          <h2 className="text-5xl md:text-6xl font-extrabold mb-6">
+            Bonjour, je suis <span className="text-indigo-300">Olivier</span>
+          </h2>
+          <p className="text-xl md:text-2xl mb-8 max-w-2xl">
+            Étudiant à l’école 42 et en reconversion professionnelle, 
+            je me passionne pour le développement web et la création 
+            d’applications.  
+            Bienvenue sur mon site vitrine & démo technique.
+          </p>
+          <div className="flex gap-4 flex-wrap justify-center mb-6">
+            <Link
+              href="/projects"
+              className="px-6 py-3 rounded-full bg-white text-indigo-600 font-medium shadow-md hover:shadow-lg hover:scale-105 transition-transform"
+            >
+              Voir mes projets
+            </Link>
+            <a
+              href="/signup"
+              className="px-6 py-3 rounded-full bg-white text-indigo-600 font-medium shadow-md hover:shadow-lg hover:scale-105 transition-transform"
+            >
+              Inscrivez-vous
+            </a>
+          </div>
+        </>
+      )}
+
+      <div className="flex gap-8 mt-6 justify-center">
+        <a
+          href="/cv/cv.pdf"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-5xl text-white hover:text-gray-200 transition"
         >
-          Se connecter
-        </Link>
-        <Link
-          href="/signup"
-          className="px-6 py-3 bg-white text-indigo-600 font-semibold rounded-lg shadow-md hover:bg-gray-100 transition"
+          <FaFileAlt />
+        </a>
+        <a
+          href="https://github.com/othorel"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-5xl text-white hover:text-gray-200 transition"
         >
-          S’inscrire
-        </Link>
+          <FaGithub />
+        </a>
+        <a
+          href="https://linkedin.com/in/olivier-thorel-24a87b158/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-5xl text-white hover:text-gray-200 transition"
+        >
+          <FaLinkedin />
+        </a>
       </div>
     </header>
   );

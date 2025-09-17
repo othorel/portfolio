@@ -1,27 +1,36 @@
+import { FaUser, FaUsers, FaLaptopCode } from "react-icons/fa";
+
 export default function Features() {
   const features = [
     {
       title: "Gestion des utilisateurs",
-      desc: "Ajoutez, modifiez et supprimez facilement les utilisateurs de votre plateforme.",
+      desc: "Implémentation complète d’authentification JWT, gestion de profil, et sécurisation des données avec Prisma et PostgreSQL.",
+      icon: <FaUser className="text-4xl text-indigo-500 mb-4" />,
     },
     {
-      title: "Collaboration en temps réel",
-      desc: "Travaillez avec vos équipes en temps réel sur vos projets et tâches.",
+      title: "Relations et collaborations",
+      desc: "Système de relations amis et collaboration entre utilisateurs, démontrant la gestion de relations complexes en base de données.",
+      icon: <FaUsers className="text-4xl text-indigo-500 mb-4" />,
     },
     {
-      title: "Tableaux de bord",
-      desc: "Suivez vos projets et performances grâce à des dashboards clairs et intuitifs.",
+      title: "Applications web modernes",
+      desc: "Développement de dashboards interactifs et responsive avec Next.js et TailwindCSS, optimisés pour performance et UX.",
+      icon: <FaLaptopCode className="text-4xl text-indigo-500 mb-4" />,
     },
   ];
 
   return (
     <section className="py-20 bg-gray-50 text-gray-800 px-6">
-      <h3 className="text-3xl font-bold text-center mb-12">Fonctionnalités</h3>
+      <h3 className="text-3xl font-bold text-center mb-12">Mes compétences & réalisations</h3>
       <div className="max-w-6xl mx-auto grid gap-12 md:grid-cols-3">
         {features.map((f, i) => (
-          <div key={i} className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
+          <div
+            key={i}
+            className="bg-white p-8 rounded-xl shadow-md hover:shadow-xl hover:scale-105 transition-transform flex flex-col items-center text-center"
+          >
+            {f.icon}
             <h4 className="text-xl font-semibold mb-2">{f.title}</h4>
-            <p>{f.desc}</p>
+            <p className="text-gray-700">{f.desc}</p>
           </div>
         ))}
       </div>
