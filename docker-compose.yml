@@ -1,17 +1,17 @@
 services:
   db:
     image: postgres:15
-    container_name: projectcollab-db
+    container_name: database
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: projectcollab
+      POSTGRES_DB: portfolio
     ports:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
-      - projectcollab-net
+      - portfolio-net
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -22,7 +22,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: projectcollab-backend
+    container_name: backend
     env_file:
       - ./backend/.env
     ports:
@@ -31,20 +31,20 @@ services:
       db:
         condition: service_healthy
     networks:
-      - projectcollab-net
+      - portfolio-net
 
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: projectcollab-frontend
+    container_name: frontend
     ports:
       - "3000:3000"
     depends_on:
       - backend
     networks:
-      - projectcollab-net
+      - portfolio-net
     volumes:
       - ./frontend:/app
 
@@ -52,5 +52,5 @@ volumes:
   db_data:
 
 networks:
-  projectcollab-net:
+  portfolio-net:
     driver: bridge

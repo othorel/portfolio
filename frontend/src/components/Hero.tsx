@@ -12,7 +12,7 @@ export default function Hero() {
       {user ? (
         <>
           <h2 className="text-5xl md:text-6xl font-extrabold mb-6">
-            Bonjour, <span className="text-indigo-300">{user.login}</span>
+            Bonjour <span className="text-indigo-300">{user.login}</span>
           </h2>
           <p className="text-xl md:text-2xl mb-8 max-w-2xl">
             Bienvenue dans la démo technique : testez la gestion de profil, les projets et les relations d’amis.
