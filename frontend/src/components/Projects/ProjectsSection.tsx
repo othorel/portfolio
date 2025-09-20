@@ -26,7 +26,7 @@ const projects = [
     description:
       "Application web fullstack pour présenter mes projets et gérer un espace collaboratif avec authentification JWT et Websocket pour notifications en temps réel.",
     stack: ["Next.js", "TypeScript", "TailwindCSS", "Prisma", "PostgreSQL"],
-    image: "/projects/logos/portfolio_logo.png",
+    image: "/projects/portfolio.png",
     github: "https://github.com/tonpseudo/portfolio",
   },
 ];

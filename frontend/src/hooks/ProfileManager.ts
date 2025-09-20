@@ -19,7 +19,8 @@ export function useProfileManager() {
   }, [user]);
 
   const updateProfile = async (email?: string, avatar?: File) => {
-    if (!user) return;
+    if (!user)
+      return;
     setLoading(true);
     setError(null);
     setSuccess(null);
@@ -37,7 +38,8 @@ export function useProfileManager() {
   };
 
   const updatePassword = async (currentPassword: string, newPassword: string) => {
-    if (!user) return;
+    if (!user)
+      return;
     setLoading(true);
     setError(null);
     setSuccess(null);

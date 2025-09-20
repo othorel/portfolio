@@ -5,11 +5,13 @@ import { useAuth } from "@/context/AuthContext";
 import { normalizeAvatar } from "@/utils/NormalizeAvatar";
 import ConfirmModal from "@/components/ConfirmModal";
 import { deleteUser } from "@/api/users";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function ProfileInfo() {
   const { user, setUser } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [avatar, setAvatar] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("/avatars/default.png");
   const [loading, setLoading] = useState(false);
@@ -33,15 +35,19 @@ export default function ProfileInfo() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user)
+      return;
     setLoading(true);
     setMessage("");
     try {
       const formData = new FormData();
       formData.append("email", email);
-      if (password) formData.append("currentPassword", password);
-      if (password) formData.append("password", password);
-      if (avatar) formData.append("avatar", avatar);
+      if (email !== user.email && password)
+        formData.append("currentPassword", password);
+      if (email !== user.email && password)
+        formData.append("password", password);
+      if (avatar)
+        formData.append("avatar", avatar);
 
       const token = localStorage.getItem("Token");
       const res = await fetch(`http://localhost:4000/users/${user.id}`, {
@@ -67,7 +73,8 @@ export default function ProfileInfo() {
   };
 
   const handleDelete = async () => {
-    if (!user) return;
+    if (!user)
+      return;
     setLoading(true);
     try {
       await deleteUser(user.id);
@@ -83,7 +90,8 @@ export default function ProfileInfo() {
     }
   };
 
-  if (!user) return <p>Chargement...</p>;
+  if (!user)
+    return <p>Chargement...</p>;
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-gray-800 rounded-xl shadow-md flex flex-col gap-6 text-white">
@@ -109,9 +117,22 @@ export default function ProfileInfo() {
         </div>
 
         {email !== user.email && (
-          <div>
+          <div className="relative">
             <label className="block font-medium mb-1">Mot de passe actuel</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Saisissez votre mot de passe" className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white" />
+            <input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Saisissez votre mot de passe"
+              className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white"
+            />
+            <button
+              type="button"
+              className="absolute right-3 top-9 text-gray-400 hover:text-gray-200"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FaEye /> : <FaEyeSlash />}
+            </button>
           </div>
         )}
 

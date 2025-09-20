@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Portfolio - Olivier Thorel",
-  description: "Collaborative project platform",
+  description: "Portfolio d'Olivier Thorel, développeur fullstack.",
 };
 
 export default function RootLayout({

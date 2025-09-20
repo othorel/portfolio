@@ -61,7 +61,8 @@ export function FriendsManager() {
   const accept = useCallback(async (request: Friendship) => {
     setError(null);
     try {
-      if (!request.user) throw new Error("Utilisateur introuvable");
+      if (!request.user)
+        throw new Error("Utilisateur introuvable");
       await apiAcceptFriend(request.user.login);
       await fetchAll();
     } catch (err: unknown) {
@@ -73,7 +74,8 @@ export function FriendsManager() {
   const reject = useCallback(async (request: Friendship) => {
     setError(null);
     try {
-      if (!request.user) throw new Error("Utilisateur introuvable");
+      if (!request.user)
+        throw new Error("Utilisateur introuvable");
       await apiRejectFriend(request.user.login);
       setPendingRequests((prev) => prev.filter((r) => r.id !== request.id));
     } catch (err: unknown) {

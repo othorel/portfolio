@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { changePassword } from "@/api/profile";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function ChangePassword() {
   const { user } = useAuth();
@@ -11,14 +12,22 @@ export default function ChangePassword() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
-  if (!user) return null;
+  if (!user)
+    return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
       setMessage("Les nouveaux mots de passe ne correspondent pas.");
       return;
+    }
+    if (currentPassword === newPassword) {
+    setMessage("Le nouveau mot de passe doit être différent de l'actuel.");
+    return;
     }
     setLoading(true);
     setMessage("");
@@ -29,8 +38,10 @@ export default function ChangePassword() {
       setNewPassword("");
       setConfirmPassword("");
     } catch (err: unknown) {
-      if (err instanceof Error) setMessage(err.message);
-      else setMessage("Erreur lors de la mise à jour du mot de passe.");
+      if (err instanceof Error)
+        setMessage(err.message);
+      else
+        setMessage("Erreur lors de la mise à jour du mot de passe.");
     } finally {
       setLoading(false);
     }
@@ -46,22 +57,42 @@ export default function ChangePassword() {
     <div className="max-w-3xl mx-auto p-6 bg-gray-800 rounded-xl shadow-md flex flex-col gap-6 text-white">
       <h2 className="text-3xl font-bold text-indigo-400 mb-4">Changer le mot de passe</h2>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <input
-          type="password"
-          placeholder="Mot de passe actuel"
-          value={currentPassword}
-          onChange={(e) => setCurrentPassword(e.target.value)}
-          className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          required
-        />
-        <input
-          type="password"
-          placeholder="Nouveau mot de passe"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          required
-        />
+
+        <div className="relative w-full">
+          <input
+            type={showCurrent ? "text" : "password"}
+            placeholder="Mot de passe actuel"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            required
+          />
+          <button
+            type="button"
+            className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-200"
+            onClick={() => setShowCurrent(!showCurrent)}
+          >
+            {showCurrent ? <FaEye /> : <FaEyeSlash />}
+          </button>
+        </div>
+
+        <div className="relative w-full">
+          <input
+            type={showNew ? "text" : "password"}
+            placeholder="Nouveau mot de passe"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            required
+          />
+          <button
+            type="button"
+            className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-200"
+            onClick={() => setShowNew(!showNew)}
+          >
+            {showNew ? <FaEye /> : <FaEyeSlash />}
+          </button>
+        </div>
 
         {newPassword && (
           <ul className="text-sm list-disc list-inside">
@@ -83,14 +114,23 @@ export default function ChangePassword() {
           </ul>
         )}
 
-        <input
-          type="password"
-          placeholder="Confirmer le nouveau mot de passe"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          required
-        />
+        <div className="relative w-full">
+          <input
+            type={showConfirm ? "text" : "password"}
+            placeholder="Confirmer le nouveau mot de passe"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            required
+          />
+          <button
+            type="button"
+            className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-200"
+            onClick={() => setShowConfirm(!showConfirm)}
+          >
+            {showConfirm ? <FaEye /> : <FaEyeSlash />}
+          </button>
+        </div>
 
         <button
           type="submit"

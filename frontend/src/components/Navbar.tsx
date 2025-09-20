@@ -94,13 +94,13 @@ export default function Navbar() {
             href="/login"
             className="text-indigo-600 font-semibold hover:underline"
           >
-            Login
+            Connexion
           </Link>
           <Link
             href="/signup"
             className="text-indigo-600 font-semibold hover:underline"
           >
-            Sign Up
+            Inscription
           </Link>
         </div>
       </nav>

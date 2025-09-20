@@ -20,7 +20,7 @@ export function PortfolioProject() {
       <header className="space-y-6 text-center flex flex-col items-center">
         <div className="relative w-64 h-64 mb-6">
           <Image
-            src="/projects/logos/portfolio_logo.png"
+            src="/projects/portfolio.png"
             alt="Portfolio logo"
             fill
             className="object-contain"

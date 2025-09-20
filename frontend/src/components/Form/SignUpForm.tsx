@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { validatePassword } from "@/utils/PasswordUtils";
 import Link from "next/link";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function SignUpForm() {
   const [loginVal, setLoginVal] = useState("");
@@ -12,6 +13,8 @@ export default function SignUpForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [localError, setLocalError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const router = useRouter();
   const { signup, loading, error } = useAuth();
@@ -63,22 +66,42 @@ export default function SignUpForm() {
           className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
           required
         />
-        <input
-          type="password"
-          placeholder="Mot de passe"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          required
-        />
-        <input
-          type="password"
-          placeholder="Confirmez le mot de passe"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          required
-        />
+
+        <div className="relative w-full">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Mot de passe"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            required
+          />
+          <button
+            type="button"
+            className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-200"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            {showPassword ? <FaEye /> : <FaEyeSlash />}
+          </button>
+        </div>
+
+        <div className="relative w-full">
+          <input
+            type={showConfirm ? "text" : "password"}
+            placeholder="Confirmez le mot de passe"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            required
+          />
+          <button
+            type="button"
+            className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-200"
+            onClick={() => setShowConfirm(!showConfirm)}
+          >
+            {showConfirm ? <FaEye /> : <FaEyeSlash />}
+          </button>
+        </div>
 
         {(localError || error) && (
           <p className="text-red-500 text-sm">{localError || error}</p>

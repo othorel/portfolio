@@ -32,7 +32,7 @@ export default function Footer() {
       </div>
 
       <p className="text-sm mb-2">
-        &copy; {new Date().getFullYear()} Olivier Thorel – Fullstack Developer Portfolio. Tous droits réservés.
+        &copy; {new Date().getFullYear()} Olivier Thorel – Portfolio. Tous droits réservés.
       </p>
 
       <p className="text-sm">
