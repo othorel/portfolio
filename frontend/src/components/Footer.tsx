@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { FaGithub, FaLinkedin, FaFileAlt } from "react-icons/fa";
 
 export default function Footer() {
@@ -29,8 +30,15 @@ export default function Footer() {
           <FaLinkedin />
         </a>
       </div>
-      <p className="text-sm">
+
+      <p className="text-sm mb-2">
         &copy; {new Date().getFullYear()} Olivier Thorel – Fullstack Developer Portfolio. Tous droits réservés.
+      </p>
+
+      <p className="text-sm">
+        <Link href="/privacy" className="text-indigo-400 hover:underline">
+          Politique de confidentialité
+        </Link>
       </p>
     </footer>
   );

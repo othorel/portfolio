@@ -1,11 +1,22 @@
 "use client";
 
 import Image from "next/image";
-import { Github } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft, Github } from "lucide-react";
 
 export function PortfolioProject() {
   return (
     <div className="max-w-4xl mx-auto py-12 px-6 space-y-12">
+      <div>
+        <Link
+          href="/projects"
+          className="inline-flex items-center gap-2 text-sm text-indigo-300 hover:text-indigo-100 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Retour aux projets
+        </Link>
+      </div>
+
       <header className="space-y-6 text-center flex flex-col items-center">
         <div className="relative w-64 h-64 mb-6">
           <Image
@@ -25,10 +36,10 @@ export function PortfolioProject() {
         <h2 className="text-2xl font-semibold text-indigo-300">🧠 About</h2>
         <p>
           Ce projet est mon portfolio interactif, permettant de présenter mes projets tout en offrant un espace collaboratif.
-          J’ai construit un **backend Dockerisé** avec Express, Prisma ORM et PostgreSQL pour gérer les données utilisateurs.
+          J’ai construit un <strong>backend Dockerisé</strong> avec Express, Prisma ORM et PostgreSQL pour gérer les données utilisateurs.
         </p>
         <p>
-          Le **frontend** est réalisé avec Next.js et TailwindCSS, avec gestion des utilisateurs, relations d’amis, modification de profil et dark mode.
+          Le <strong>frontend</strong> est réalisé avec Next.js et TailwindCSS, avec gestion des utilisateurs, relations d’amis et modification de profil.
         </p>
       </section>
 
@@ -37,8 +48,9 @@ export function PortfolioProject() {
         <ul className="list-disc pl-5 space-y-1 text-gray-300">
           <li>Gestion complète des utilisateurs (authentification JWT, création, modification, suppression)</li>
           <li>Relations d’amis et gestion de contacts</li>
+          <li>Websocket pour les notifications en temps réel</li>
           <li>Interface moderne avec Next.js et TailwindCSS</li>
-          <li>Dark mode et responsive design</li>
+          <li>Mode responsive design</li>
           <li>Backend avec Prisma ORM et PostgreSQL, entièrement dockerisé</li>
           <li>API sécurisée et performante via Express</li>
           <li>Déploiement conteneurisé (frontend, backend, base de données)</li>

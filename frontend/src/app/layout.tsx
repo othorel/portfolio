@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Project Collab",
+  title: "Portfolio - Olivier Thorel",
   description: "Collaborative project platform",
 };
 

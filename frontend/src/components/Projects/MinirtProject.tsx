@@ -1,11 +1,22 @@
 "use client";
 
 import Image from "next/image";
-import { Github } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft, Github } from "lucide-react";
 
 export function MinirtProject() {
   return (
     <div className="max-w-4xl mx-auto py-12 px-6 space-y-12">
+      <div>
+        <Link
+          href="/projects"
+          className="inline-flex items-center gap-2 text-sm text-indigo-300 hover:text-indigo-100 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Retour aux projets
+        </Link>
+      </div>
+
       <header className="space-y-6 text-center flex flex-col items-center">
         <div className="relative w-64 h-64 mb-6">
           <Image

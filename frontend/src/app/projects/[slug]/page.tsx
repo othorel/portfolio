@@ -10,6 +10,7 @@ import { PageProps } from "@/types/Page";
 import { WebservProject } from "@/components/Projects/WebservProject";
 import { MinirtProject } from "@/components/Projects/MinirtProject";
 import { PortfolioProject } from "@/components/Projects/PortfolioProject";
+import Footer from "@/components/Footer";
 
 const projects: Project[] = [
   {
@@ -92,6 +93,7 @@ export default function ProjectPage({ params }: PageProps) {
           </a>
         </>
       )}
+      <Footer />
     </div>
   );
 }

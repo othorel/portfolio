@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { normalizeAvatar } from "@/utils/NormalizeAvatar";
+import ConfirmModal from "@/components/ConfirmModal";
+import { deleteUser } from "@/api/users";
 
 export default function ProfileInfo() {
   const { user, setUser } = useAuth();
@@ -12,13 +14,13 @@ export default function ProfileInfo() {
   const [preview, setPreview] = useState<string>("/avatars/default.png");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [showConfirm, setShowConfirm] = useState(false);
 
   useEffect(() => {
     if (user) {
       setEmail(user.email);
       const isDefault = !user.avatar || user.avatar.includes("/avatars/default.png");
-      const normalized = isDefault ? "/avatars/default.png" : normalizeAvatar(user.avatar);
-      setPreview(normalized);
+      setPreview(isDefault ? "/avatars/default.png" : normalizeAvatar(user.avatar));
     }
   }, [user]);
 
@@ -64,6 +66,23 @@ export default function ProfileInfo() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!user) return;
+    setLoading(true);
+    try {
+      await deleteUser(user.id);
+      localStorage.removeItem("User");
+      localStorage.removeItem("Token");
+      setUser(null);
+      window.location.href = "/";
+    } catch (err: unknown) {
+      setMessage(err instanceof Error ? err.message : "Erreur lors de la suppression du compte");
+    } finally {
+      setLoading(false);
+      setShowConfirm(false);
+    }
+  };
+
   if (!user) return <p>Chargement...</p>;
 
   return (
@@ -105,6 +124,23 @@ export default function ProfileInfo() {
           {loading ? "Mise à jour..." : "Mettre à jour"}
         </button>
       </form>
+
+      <div className="flex justify-center mt-4">
+        <button
+          onClick={() => setShowConfirm(true)}
+          className="bg-red-500 hover:bg-red-600 transition-colors py-2 px-4 rounded font-semibold"
+        >
+          Supprimer mon compte
+        </button>
+      </div>
+
+      {showConfirm && (
+        <ConfirmModal
+          message="Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible."
+          onConfirm={handleDelete}
+          onCancel={() => setShowConfirm(false)}
+        />
+      )}
 
       {message && <p className="text-center text-sm text-gray-300 mt-2">{message}</p>}
     </div>
