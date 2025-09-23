@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { io, Socket } from "socket.io-client";
 import {
   createConversation as apiCreateConversation,
   getConversations as apiGetConversations,
@@ -9,7 +10,9 @@ import {
 } from "@/api/chat";
 import { Conversation, Message } from "@/types/Chat";
 
-export function useChatManager() {
+let socket: Socket | null = null;
+
+export function useChatManager(token?: string) {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [messages, setMessages] = useState<Record<number, Message[]>>({});
   const [loading, setLoading] = useState<boolean>(true);
@@ -29,19 +32,19 @@ export function useChatManager() {
   }, []);
 
   const createConversation = useCallback(
-    async (participantLogins: string[]): Promise<Conversation> => {
-      setError(null);
-      try {
-        const conv = await apiCreateConversation({ participantLogins });
-        setConversations((prev) => [...prev, conv]);
-        return conv;
-      } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : "Erreur inconnue");
-        throw err;
-      }
-    },
-    []
-  );
+  async (participantLogins: string[], name?: string): Promise<Conversation> => {
+    setError(null);
+    try {
+      const conv = await apiCreateConversation({ participantLogins, name });
+      setConversations((prev) => [...prev, conv]);
+      return conv;
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Erreur inconnue");
+      throw err;
+    }
+  },
+  []
+);
 
   const fetchMessages = useCallback(async (conversationId: number) => {
     setError(null);
@@ -70,6 +73,39 @@ export function useChatManager() {
     }
   }, []);
 
+  useEffect(() => {
+    if (!token) return;
+
+    if (!socket) {
+      socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string, {
+        auth: { token },
+      });
+    }
+
+    const handleNewMessage = (msg: Message) => {
+      setMessages((prev) => {
+        const convMsgs = prev[msg.conversationId] || [];
+        return { ...prev, [msg.conversationId]: [...convMsgs, msg] };
+      });
+      if (!conversations.find((c) => c.id === msg.conversationId)) {
+        fetchConversations();
+      }
+    };
+
+    const handleNewConversation = (conv: Conversation) => {
+      setConversations((prev) => [...prev, conv]);
+    };
+
+    socket.on("new-message", handleNewMessage);
+    socket.on("new-conversation", handleNewConversation);
+
+    return () => {
+      socket?.off("new-message", handleNewMessage);
+      socket?.off("new-conversation", handleNewConversation);
+    };
+  }, [token, conversations, fetchConversations]);
+
+  // Initial fetch
   useEffect(() => {
     fetchConversations();
   }, [fetchConversations]);
