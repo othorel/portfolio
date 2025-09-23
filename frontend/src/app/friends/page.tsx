@@ -2,6 +2,7 @@
 
 import Footer from "@/components/Footer";
 import ProfileFriends from "@/components/Friends/Friends";
+import ProfileChat from "@/components/Chat/ProfileChat";
 
 export default function FriendsPage() {
   return (
@@ -12,6 +13,7 @@ export default function FriendsPage() {
             Gestion des collaborateurs
           </h1>
           <ProfileFriends />
+          <ProfileChat />
         </div>
       </main>
       <Footer />

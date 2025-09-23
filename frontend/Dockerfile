@@ -8,10 +8,8 @@ RUN npm install
 
 COPY . .
 
-# Build Next.js
 RUN npm run build
 
 EXPOSE 3000
 
-# Commande pour démarrer le serveur Next.js
 CMD ["npm", "run", "start"]
