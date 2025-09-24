@@ -15,14 +15,14 @@ export interface Message {
 
 export interface Conversation {
   id: number;
+  title?: string;
   participants: { id: number; login: string; email?: string; avatar?: string | null }[];
   messages?: Message[];
-  name?: string;
 }
 
 export interface CreateConversationPayload {
   participantLogins: string[];
-  name?: string;
+  title?: string;
 }
 
 export interface SendMessagePayload {

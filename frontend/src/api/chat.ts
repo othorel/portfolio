@@ -5,7 +5,7 @@ import {
     CreateConversationPayload,
     SendMessagePayload } from "../types/Chat";
 
-export async function createConversation(payload: { participantLogins: string[]; name?: string }): Promise<Conversation> {
+export async function createConversation(payload: { participantLogins: string[]; title?: string }): Promise<Conversation> {
   const data = await apiFetch<{ conversation: Conversation }>("/chat/conversation", {
     method: "POST",
     body: JSON.stringify(payload),

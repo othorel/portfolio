@@ -14,11 +14,9 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 const PORT = Number(process.env.PORT) || 3001;
 
 const server = http.createServer(app);
+
 const io = new Server(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
-  }
+  cors: { origin: "*", methods: ["GET", "POST"] },
 });
 
 io.on("connection", (socket) => {
@@ -27,7 +25,7 @@ io.on("connection", (socket) => {
   socket.on("join", (userId: number) => {
     socket.data.userId = userId;
     socket.join(userId.toString());
-    console.log(`Utilisateur ${userId} a rejoint le socket`);
+    console.log(`Utilisateur ${userId} a rejoint la room`);
   });
 
   socket.on("send_message", async (data) => {
@@ -40,13 +38,13 @@ io.on("connection", (socket) => {
         },
         include: { sender: true },
       });
+
       const participants = await prisma.conversationParticipant.findMany({
         where: { conversationId: data.conversationId },
       });
+
       participants.forEach((p) => {
-        if (p.userId !== data.senderId) {
-          io.to(p.userId.toString()).emit("receive_message", message);
-        }
+        io.to(p.userId.toString()).emit("new-message", message);
       });
 
     } catch (err) {

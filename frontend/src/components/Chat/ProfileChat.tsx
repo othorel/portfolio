@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useChatManager } from "@/hooks/ChatManager";
-import { Conversation, Message } from "@/types/Chat";
+import { Conversation } from "@/types/Chat";
 import { useAuth } from "@/context/AuthContext";
 
 export default function ProfileChat() {
@@ -15,12 +15,12 @@ export default function ProfileChat() {
     createConversation,
     sendMessage,
     fetchMessages,
-  } = useChatManager();
+  } = useChatManager(user?.id);
 
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [newMessage, setNewMessage] = useState("");
   const [newParticipant, setNewParticipant] = useState("");
-  const [conversationName, setConversationName] = useState("");
+  const [conversationTitle, setConversationTitle] = useState("");
 
   const handleSelectConversation = async (conv: Conversation) => {
     setSelectedConversation(conv);
@@ -35,10 +35,13 @@ export default function ProfileChat() {
 
   const handleCreateConversation = async () => {
     if (!newParticipant.trim()) return;
-    const conv = await createConversation([newParticipant.trim()], conversationName.trim() || undefined);
+    const conv = await createConversation(
+      [newParticipant.trim()],
+      conversationTitle.trim() || undefined
+    );
     setSelectedConversation(conv);
     setNewParticipant("");
-    setConversationName("");
+    setConversationTitle("");
   };
 
   if (loading) return <p className="text-gray-300">Chargement des conversations...</p>;
@@ -47,20 +50,19 @@ export default function ProfileChat() {
   return (
     <div className="w-full flex justify-center p-8 font-sans text-white">
       <div className="max-w-5xl w-full space-y-8">
-
         <div className="bg-gray-800 p-4 rounded-xl shadow-md flex flex-col gap-2">
           <input
             type="text"
-            placeholder="Nom du participant"
+            placeholder="Login du participant"
             value={newParticipant}
             onChange={(e) => setNewParticipant(e.target.value)}
             className="px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
           <input
             type="text"
-            placeholder="Nom de la conversation (optionnel)"
-            value={conversationName}
-            onChange={(e) => setConversationName(e.target.value)}
+            placeholder="Titre de la conversation (optionnel)"
+            value={conversationTitle}
+            onChange={(e) => setConversationTitle(e.target.value)}
             className="px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
           <button
@@ -84,7 +86,7 @@ export default function ProfileChat() {
                     selectedConversation?.id === conv.id ? "bg-gray-700" : ""
                   }`}
                 >
-                  {conv.name || conv.participants.map((p) => p.login).join(", ")}
+                  {conv.title || conv.participants.map((p) => p.login).join(", ")}
                 </button>
               ))}
             </div>
@@ -93,7 +95,7 @@ export default function ProfileChat() {
           <div className="bg-gray-800 p-4 rounded-xl shadow-md flex flex-col max-h-[500px]">
             <h2 className="text-2xl font-semibold mb-4">
               {selectedConversation
-                ? `Messages - ${selectedConversation.name || selectedConversation.participants.map((p) => p.login).join(", ")}`
+                ? `Messages - ${selectedConversation.title || selectedConversation.participants.map((p) => p.login).join(", ")}`
                 : "Messages"}
             </h2>
 
