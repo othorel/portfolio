@@ -6,7 +6,7 @@ This is my personal portfolio project, built to showcase my full-stack developme
 
 
 <p align="center">
-  <img src="" />
+  <img src="https://github.com/othorel/portfolio/blob/main/images/index.png" />
 </p>
 
 ---
