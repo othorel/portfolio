@@ -6,7 +6,7 @@ This is my personal portfolio project, built to showcase my full-stack developme
 
 
 <p align="center">
-  <img src="https://github.com/othorel/portfolio/blob/main/frontend/public/projects/portfolio.png" width="600" />
+  <img src="https://github.com/othorel/portfolio/blob/main/images/index.png" width="600" />
 </p>
 
 ---
@@ -120,5 +120,21 @@ This will start the backend, database, and frontend automatically.
 4 - Open in browser
 
 Navigate to http://localhost:3000 to see the application.
+
+---
+
+### Screenshots
+
+<p align="center">
+  <img src="https://github.com/othorel/portfolio/blob/main/images/register.png" width="300"/>
+</p>
+
+<p align="center">
+  <img src="https://github.com/othorel/portfolio/blob/main/images/friend.png" width="400"/>
+</p>
+
+<p align="center">
+  <img src= "https://github.com/othorel/portfolio/blob/main/images/project.png" width="600"/>
+</p>
 
 ---
