@@ -4,6 +4,11 @@ By Olivier Thorel – Fullstack Developer & Student from 42 Perpignan, France
 
 This is my personal portfolio project, built to showcase my full-stack development skills. It demonstrates user management, secure authentication, profile customization, friend relationships, and a dynamic frontend—all built with modern web technologies.
 
+<p align="center">
+  <a href="https://github.com/othorel/portfolio" target="_blank">
+    <img src="https://github.com/othorel/portfolio/blob/main/frontend/public/projects/portfolio.png" width="120" alt="Portfolio Logo"/>
+  </a>
+</p>
 
 <p align="center">
   <img src="https://github.com/othorel/portfolio/blob/main/images/index.png" width="600" />
@@ -40,13 +45,11 @@ This is my personal portfolio project, built to showcase my full-stack developme
 
 ### Tech Stack
 
-- Frontend: Next.js, React
-- Backend: Node.js, Express.js
-- Database: PostgreSQL
-- ORM: Prisma
-- Authentication: JWT
-- Containerization: Docker & Docker Compose
-- Optional: Tailwind CSS for UI styling
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white)
 
 ---
 
@@ -136,5 +139,12 @@ Navigate to http://localhost:3000 to see the application.
 <p align="center">
   <img src= "https://github.com/othorel/portfolio/blob/main/images/project.png" width="600"/>
 </p>
+
+---
+
+### Contributing
+
+Feel free to fork this project and submit pull requests.  
+For questions or feedback, contact me at: [thorel.olivier@hotmail.com](mailto:thorel.olivier@hotmail.com)
 
 ---
