@@ -109,7 +109,7 @@ cd REPO_NAME
 ```bash
 
 DATABASE_URL=postgresql://user:password@localhost:5432/dbname
-DEFAULT_AVATAR="/avatars/default.png"
+DEFAULT_AVATAR="/uploads/avatars/default.png"
 JWT_SECRET="your jwt_secret"
 
 ```
@@ -119,6 +119,7 @@ JWT_SECRET="your jwt_secret"
 ```bash
 
 NEXT_PUBLIC_API_URL=https://localhost/api
+NEXT_PUBLIC_SOCKET_URL=wss://localhost/socket.io
 
 ```
 Adjust values according to your local setup.
