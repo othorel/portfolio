@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "@/context/AuthContext";
 import { FaGithub, FaLinkedin, FaFileAlt } from "react-icons/fa";
 
@@ -12,10 +13,10 @@ export default function Hero() {
       {user ? (
         <>
           <h2 className="text-5xl md:text-6xl font-extrabold mb-6">
-            Bonjour <span className="text-indigo-300">{user.login}</span>
+            Bienvenue <span className="text-indigo-300">{user.login}</span>
           </h2>
           <p className="text-xl md:text-2xl mb-8 max-w-2xl">
-            Bienvenue dans la démo technique : testez la gestion de profil, les projets et les relations d’amis.
+            Explorez vos projets, votre profil et vos amis dans cette démo technique.
           </p>
           <div className="flex gap-4 flex-wrap justify-center mb-6">
             <Link
@@ -42,15 +43,26 @@ export default function Hero() {
         </>
       ) : (
         <>
-          <h2 className="text-5xl md:text-6xl font-extrabold mb-6">
-            Bonjour, je suis <span className="text-indigo-300">Olivier</span>
-          </h2>
+          <div className="flex flex-col items-center mb-6">
+            <Image
+              src="/images/profile.jpeg"
+              alt="Photo de profil d’Olivier"
+              width={160}
+              height={160}
+              className="rounded-full shadow-lg border-4 border-white object-cover mb-4 hover:scale-105 transition-transform duration-300"
+            />
+            <h2 className="text-5xl md:text-6xl font-extrabold mb-4">
+              <span className="text-indigo-300">Olivier Thorel</span>
+            </h2>
+          </div>
+
           <p className="text-xl md:text-2xl mb-8 max-w-2xl">
             Étudiant à l’école 42 et en reconversion professionnelle, 
             je me passionne pour le développement web et la création 
             d’applications.  
             Bienvenue sur mon site vitrine & démo technique.
           </p>
+
           <div className="flex gap-4 flex-wrap justify-center mb-6">
             <Link
               href="/projects"

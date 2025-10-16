@@ -25,8 +25,8 @@ services:
     container_name: backend
     env_file:
       - ./backend/.env
-    ports:
-      - "4000:3001"
+    expose:
+      - "3001"
     depends_on:
       db:
         condition: service_healthy
@@ -39,14 +39,29 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: frontend
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     depends_on:
       - backend
     networks:
       - portfolio-net
     volumes:
       - ./frontend:/app
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - portfolio-net
 
 volumes:
   db_data:
