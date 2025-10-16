@@ -136,7 +136,7 @@ This will start the backend, database, and frontend automatically.
 
 4 - Open in browser
 
-Navigate to http://localhost:3000 to see the application.
+Navigate to https://localhost to see the application.
 
 ---
 
