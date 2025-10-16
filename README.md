@@ -60,12 +60,25 @@ This is my personal portfolio project, built to showcase my full-stack developme
 /frontend    - Next.js frontend
 /backend     - Node.js backend with Express & Prisma
 /database    - PostgreSQL
+/nginx       - Nginx reverse proxy with HTTPS
 
 ```
 
 <p align="center">
   <img src="https://github.com/othorel/portfolio/blob/main/images/docker.png" />
 </p>
+
+---
+
+### Deployment & HTTPS
+
+- Application is served via Nginx as a reverse proxy.
+- HTTPS is enabled using self-signed certificates for local development.
+In production, replace these with certificates from Let's Encrypt or another CA.
+- Nginx proxies:
+  - / → frontend (Next.js)
+  - /api/ → backend (Node.js / Express)
+- All API requests are secured with JWT authentication.
 
 ---
 
@@ -105,7 +118,7 @@ JWT_SECRET="your jwt_secret"
 
 ```bash
 
-NEXT_PUBLIC_API_URL=http://localhost:4000
+NEXT_PUBLIC_API_URL=https://localhost/api
 
 ```
 Adjust values according to your local setup.
