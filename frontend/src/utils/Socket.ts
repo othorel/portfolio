@@ -4,7 +4,7 @@ let socket: Socket | null = null;
 
 export const connectSocket = (token: string) => {
   if (!socket) {
-    socket = io(`${process.env.NEXT_PUBLIC_API_URL}`, {
+    socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string, {
       auth: { token },
       transports: ["websocket", "polling"],
     });

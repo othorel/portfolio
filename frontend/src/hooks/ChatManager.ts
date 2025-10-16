@@ -68,7 +68,9 @@ export function useChatManager(userId?: number) {
     if (!userId) return;
 
     if (!socket) {
-      socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string);
+      socket = io(process.env.NEXT_PUBLIC_SOCKET_URL as string, {
+        transports: ["websocket", "polling"]
+    });
 
       socket.on("connect", () => {
         socket?.emit("join", userId);

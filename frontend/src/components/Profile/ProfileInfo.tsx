@@ -50,7 +50,7 @@ export default function ProfileInfo() {
         formData.append("avatar", avatar);
 
       const token = localStorage.getItem("Token");
-      const res = await fetch(`http://localhost:4000/users/${user.id}`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${user.id}`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
