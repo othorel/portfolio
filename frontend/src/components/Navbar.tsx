@@ -28,31 +28,33 @@ export default function Navbar() {
     addNotification,
   } = useNotificationsManager();
 
-  const unreadCount = notifications.filter((n: Notification) => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
+  // ⚡ Socket : écoute uniquement les notifications
   useEffect(() => {
-    if (!user || !token)
-      return;
+    if (!user || !token) return;
+
     const socket = connectSocket(token);
-    socket.on("new-notification", (notification: Notification) => {
+
+    const handleNewNotif = (notification: Notification) => {
+      console.log("📩 New notification received:", notification);
       addNotification(notification);
-    });
+    };
+
+    socket.on("new-notification", handleNewNotif);
+
     return () => {
-      socket.off("new-notification");
+      socket.off("new-notification", handleNewNotif);
+      // ⚠️ Ne pas disconnect pour garder notifications live
     };
   }, [user, token, addNotification]);
 
   useEffect(() => {
-    if (!user)
-      return;
-    fetchNotifications();
+    if (user) fetchNotifications();
   }, [user, fetchNotifications]);
 
   useEffect(() => {
-    if (user)
-      setAvatarUrl(normalizeAvatar(user.avatar));
-    else 
-      setAvatarUrl(null);
+    setAvatarUrl(user ? normalizeAvatar(user.avatar) : null);
   }, [user]);
 
   const handleImgError = () => setAvatarUrl("/avatars/default.png");
@@ -70,7 +72,7 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleNotificationAction = async (notification: Notification) => {
+  const handleNotificationAction = (notification: Notification) => {
     if (notification.message.includes("demande d'ami")) {
       router.push("/friends");
       setNotifOpen(false);
@@ -114,6 +116,7 @@ export default function Navbar() {
       </Link>
 
       <div className="flex items-center gap-6">
+        {/* Notifications */}
         <div className="relative" ref={notifRef}>
           <div
             className="relative cursor-pointer"
@@ -143,7 +146,7 @@ export default function Navbar() {
                 </p>
               ) : (
                 <div className="divide-y divide-gray-100">
-                  {notifications.map((notification: Notification) => (
+                  {notifications.map((notification) => (
                     <div
                       key={notification.id}
                       className={`p-3 hover:bg-gray-50 cursor-pointer transition-colors ${
@@ -199,6 +202,7 @@ export default function Navbar() {
           )}
         </div>
 
+        {/* Avatar / Menu */}
         <div className="relative" ref={menuRef}>
           {avatarUrl && (
             <img

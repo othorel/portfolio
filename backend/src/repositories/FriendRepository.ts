@@ -1,27 +1,29 @@
 import { prisma } from "../prismaClient.js";
 import { NotificationRepository } from "./NotificationRepository.js";
 import { Friendship, FriendshipStatus, User } from "@prisma/client";
+import { Server } from "socket.io";
 
 const notificationRepo = new NotificationRepository();
 
 export class FriendRepository {
+  constructor(private io?: Server) {} // Injection de l'instance Socket.IO
+
   private async getUserByLogin(login: string): Promise<User> {
     const user = await prisma.user.findUnique({ where: { login } });
-    if (!user)
-      throw new Error("Utilisateur introuvable");
+    if (!user) throw new Error("Utilisateur introuvable");
     return user;
   }
 
   private async getUserById(id: number): Promise<User> {
     const user = await prisma.user.findUnique({ where: { id } });
-    if (!user)
-      throw new Error("Utilisateur introuvable");
+    if (!user) throw new Error("Utilisateur introuvable");
     return user;
   }
 
   async addFriend(userId: number, friendLogin: string): Promise<Friendship> {
     const friend = await this.getUserByLogin(friendLogin);
     const sender = await this.getUserById(userId);
+
     await prisma.friendship.deleteMany({
       where: {
         OR: [
@@ -40,16 +42,24 @@ export class FriendRepository {
       },
     });
 
-    const blocking = existing.find(e => e.status === FriendshipStatus.PENDING || e.status === FriendshipStatus.ACCEPTED);
-    if (blocking)
-      throw new Error("Une demande existe déjà ou vous êtes déjà amis");
+    const blocking = existing.find(
+      (e) => e.status === FriendshipStatus.PENDING || e.status === FriendshipStatus.ACCEPTED
+    );
+    if (blocking) throw new Error("Une demande existe déjà ou vous êtes déjà amis");
+
     const newFriendship = await prisma.friendship.create({
       data: { userId, friendId: friend.id, status: FriendshipStatus.PENDING },
     });
-    await notificationRepo.createNotification(
+
+    const newNotification = await notificationRepo.createNotification(
       friend.id,
       `Vous avez reçu une demande d'ami de ${sender.login}`
     );
+
+    if (this.io) {
+      this.io.to(friend.id.toString()).emit("new-notification", newNotification);
+    }
+
     return newFriendship;
   }
 
@@ -64,18 +74,26 @@ export class FriendRepository {
         status: FriendshipStatus.PENDING,
       },
     });
-    if (!friendship)
-      throw new Error("Demande introuvable");
+    if (!friendship) throw new Error("Demande introuvable");
+
     const updatedFriendship = await prisma.friendship.update({
       where: { id: friendship.id },
       data: { status: FriendshipStatus.ACCEPTED },
     });
 
-    const sender = await this.getUserById(friendship.userId === userId ? friendship.friendId : friendship.userId);
-    await notificationRepo.createNotification(
+    const sender = await this.getUserById(
+      friendship.userId === userId ? friendship.friendId : friendship.userId
+    );
+
+    const newNotification = await notificationRepo.createNotification(
       sender.id,
       `Votre demande d'ami a été acceptée par ${friendLogin}`
     );
+
+    if (this.io) {
+      this.io.to(sender.id.toString()).emit("new-notification", newNotification);
+    }
+
     return updatedFriendship;
   }
 
@@ -90,16 +108,25 @@ export class FriendRepository {
         status: FriendshipStatus.PENDING,
       },
     });
-    if (friendship) {
-      await prisma.friendship.update({
-        where: { id: friendship.id },
-        data: { status: FriendshipStatus.REJECTED },
-      });
-      const sender = await this.getUserById(friendship.userId === userId ? friendship.friendId : friendship.userId);
-      await notificationRepo.createNotification(
-        sender.id,
-        `Votre demande d'ami a été refusée par ${friend.login}`
-      );
+
+    if (!friendship) return;
+
+    await prisma.friendship.update({
+      where: { id: friendship.id },
+      data: { status: FriendshipStatus.REJECTED },
+    });
+
+    const sender = await this.getUserById(
+      friendship.userId === userId ? friendship.friendId : friendship.userId
+    );
+
+    const newNotification = await notificationRepo.createNotification(
+      sender.id,
+      `Votre demande d'ami a été refusée par ${friend.login}`
+    );
+
+    if (this.io) {
+      this.io.to(sender.id.toString()).emit("new-notification", newNotification);
     }
   }
 
@@ -143,10 +170,7 @@ export class FriendRepository {
 
   async getSentRequests(userId: number) {
     return prisma.friendship.findMany({
-      where: { 
-        userId, 
-        status: FriendshipStatus.PENDING 
-      },
+      where: { userId, status: FriendshipStatus.PENDING },
       include: { friend: true },
     });
   }
