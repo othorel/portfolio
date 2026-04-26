@@ -8,7 +8,7 @@ export function Footer() {
         
         {/* LEFT */}
         <span className="text-xs sm:text-sm">
-          © {new Date().getFullYear()} Olivier Thorel
+            © {new Date().getFullYear()} Olivier Thorel — Built with Next.js
         </span>
 
         {/* RIGHT */}
