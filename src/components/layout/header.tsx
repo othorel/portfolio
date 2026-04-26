@@ -3,17 +3,15 @@ import { Button } from "@/components/ui/button";
 
 export function Header() {
   return (
-    <header className="sticky top-0 z-50 border-b bg-background/75 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/75 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        {/* Logo */}
         <Link
           href="/"
-          className="font-medium tracking-tight transition-colors hover:text-muted-foreground"
+          className="text-sm font-medium tracking-tight transition-colors hover:text-muted-foreground"
         >
           Olivier Thorel
         </Link>
 
-        {/* Navigation */}
         <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
           <Link
             href="/#work"
@@ -35,7 +33,6 @@ export function Header() {
           </Link>
         </nav>
 
-        {/* External link */}
         <Button variant="outline" size="sm" asChild>
           <a
             href="https://github.com/othorel"

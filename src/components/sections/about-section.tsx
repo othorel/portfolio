@@ -1,15 +1,15 @@
+import { SectionHeading } from "@/components/ui/section-heading";
+
 export function AboutSection() {
   return (
     <section id="about" className="mx-auto max-w-6xl px-6 pb-24">
       <div className="grid gap-12 md:grid-cols-2">
         {/* About */}
         <div>
-          <h2 className="text-2xl font-semibold">About</h2>
-
-          <p className="mt-6 text-muted-foreground">
-            Fullstack engineer focused on building real-world SaaS applications
-            with clean architecture and strong product thinking.
-          </p>
+          <SectionHeading
+            title="About"
+            description="Fullstack engineer focused on building real-world SaaS applications with clean architecture and strong product thinking."
+          />
 
           <p className="mt-4 text-muted-foreground">
             I work across the entire stack, from modern frontend interfaces to
@@ -20,7 +20,7 @@ export function AboutSection() {
 
         {/* Contact */}
         <div>
-          <h2 className="text-2xl font-semibold">Contact</h2>
+          <SectionHeading title="Contact" />
 
           <div className="mt-6 space-y-3 text-muted-foreground">
             <p>

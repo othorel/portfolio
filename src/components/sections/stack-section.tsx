@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { SectionHeading } from "@/components/ui/section-heading";
 
 const stackGroups = [
   {
@@ -21,13 +22,10 @@ const stackGroups = [
 export function StackSection() {
   return (
     <section id="stack" className="mx-auto max-w-6xl px-6 pb-24">
-      <div className="max-w-2xl">
-        <h2 className="text-2xl font-semibold">Stack</h2>
-        <p className="mt-3 text-muted-foreground">
-          Technologies and patterns I use to build production-ready web
-          applications.
-        </p>
-      </div>
+        <SectionHeading
+            title="Stack"
+            description="Technologies and patterns I use to build production-ready web applications."
+        />
 
       <div className="mt-10 grid gap-6 md:grid-cols-3">
         {stackGroups.map((group) => (
