@@ -16,32 +16,35 @@ export function ProjectCard({
   slug,
 }: ProjectCardProps) {
   return (
-    <Link href={`/work/${slug}`} className="group block">
-      <article className="relative overflow-hidden rounded-2xl border bg-card/40 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-foreground/30 hover:bg-card/70">
-        
-        {/* Glow */}
-        <div className="pointer-events-none absolute inset-0 -z-10 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(120,119,198,0.2),transparent_50%)]" />
-        </div>
+    <Link href={`/work/${slug}`} className="group block h-full">
+      <article className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card/70 p-8 shadow-sm ring-1 ring-inset ring-border/40 backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:border-primary/40 hover:bg-accent/20 hover:shadow-2xl hover:shadow-black/40">
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-muted/40 to-transparent opacity-60" />
 
-        {/* Header */}
+        <div className="pointer-events-none absolute right-0 top-0 h-32 w-32 translate-x-12 -translate-y-12 rounded-full bg-primary/20 blur-3xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+
         <div className="flex items-start justify-between gap-6">
-          <h3 className="text-lg font-medium leading-snug">
+          <h3 className="text-lg font-semibold leading-snug tracking-tight text-foreground">
             {title}
           </h3>
 
-          <ArrowUpRight className="size-5 shrink-0 text-muted-foreground transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:text-foreground" />
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-muted/50 text-muted-foreground transition-all duration-300 group-hover:border-primary/50 group-hover:bg-primary/15 group-hover:text-foreground">
+            <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </div>
         </div>
 
-        {/* Description */}
-        <p className="mt-3 text-sm leading-6 text-muted-foreground">
+        <p className="mt-4 text-sm leading-6 text-muted-foreground">
           {description}
         </p>
 
-        {/* Tags */}
-        <div className="mt-6 flex flex-wrap gap-2">
+        <div className="mt-auto flex flex-wrap gap-2 pt-7">
           {tags.map((tag) => (
-            <Badge key={tag} variant="secondary">
+            <Badge
+              key={tag}
+              variant="secondary"
+              className="border border-border bg-muted/50 text-muted-foreground transition-colors hover:border-primary/30 hover:bg-accent/30 hover:text-foreground"
+            >
               {tag}
             </Badge>
           ))}

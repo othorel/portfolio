@@ -3,52 +3,54 @@ export const projects = [
     title: "Confidential SaaS Platform",
     slug: "confidential-saas-platform",
     description:
-      "Fullstack platform with onboarding workflows, document management, admin dashboard and complex business logic.",
+      "A production-oriented SaaS platform with role-based onboarding, secure document workflows, admin review tools and shared business rules across the stack.",
     tags: ["Next.js", "NestJS", "Prisma", "PostgreSQL", "S3"],
     context:
-      "A confidential SaaS platform designed around role-based onboarding, document validation and admin review workflows.",
+      "This project was built around a common SaaS problem: turning a complex onboarding and validation process into a clear product experience for multiple user roles.",
     architecture:
-      "Built with a modern fullstack architecture using Next.js for the frontend, NestJS for the API, Prisma with PostgreSQL for persistence and shared TypeScript validation across the stack.",
+      "The platform uses Next.js for the user interface, NestJS for the API layer, Prisma with PostgreSQL for persistence, and shared TypeScript/Zod validation to keep frontend and backend contracts aligned.",
     challenges:
-      "The main challenge was handling complex onboarding states, secure document uploads, review statuses and keeping frontend and backend business rules aligned.",
+      "The hardest part was managing many business states without duplicating logic: user roles, onboarding progression, document status, admin review decisions and secure upload flows all had to stay consistent.",
     outcome:
-      "A scalable, maintainable platform with strong typing, shared validation, clear domain logic and production-ready workflow patterns.",
+      "The result is a maintainable fullstack foundation with typed API contracts, reusable validation, clear domain boundaries and production-ready workflow patterns.",
     decisions: [
-      "Shared validation between frontend and backend using TypeScript and Zod.",
-      "Clear separation of concerns between UI, API and business logic layers.",
-      "Secure document upload flow with validation and status tracking.",
-      "Consistent domain logic enforced across the entire stack.",
+      "Shared TypeScript and Zod schemas to keep frontend and backend validation consistent.",
+      "Role-based onboarding logic designed as explicit domain states instead of scattered UI conditions.",
+      "Secure document upload flow with file validation, storage status and review tracking.",
+      "Admin-facing workflows separated from user-facing onboarding to keep responsibilities clear.",
     ],
     features: [
-      "Role-based dashboards",
-      "Secure document upload flow",
-      "Admin review workflow",
+      "Role-based onboarding experience",
+      "Secure document upload and validation flow",
+      "Admin dashboard for review and decision workflows",
+      "Shared business rules between frontend and backend",
     ],
   },
   {
     title: "Real-time Messaging Platform",
     slug: "real-time-messaging",
     description:
-      "Fullstack application featuring real-time messaging, channels, authentication and interactive UI inspired by modern communication tools.",
+      "A real-time communication app with channel-based conversations, live message updates, authentication and a responsive interface inspired by modern team tools.",
     tags: ["React", "Node.js", "WebSocket", "PostgreSQL"],
     context:
-      "A real-time communication platform focused on channels, conversations, authentication and responsive user interactions.",
+      "This project explores the core mechanics of a modern messaging product: authenticated users, channels, live conversations and immediate interface feedback.",
     architecture:
-      "Built around a frontend application connected to a backend API with real-time communication handled through WebSocket-based events.",
+      "The application is structured around a frontend client connected to a backend API, with WebSocket events used to synchronize message and channel updates in real time.",
     challenges:
-      "The main challenge was keeping conversations, channel state and user interactions synchronized while maintaining a clean and responsive interface.",
+      "The main challenge was keeping the interface fast and predictable while handling live updates, channel switching, user sessions and message state synchronization.",
     outcome:
-      "A polished fullstack application demonstrating real-time features, interactive UI patterns and structured backend communication.",
+      "The result is a polished fullstack application that demonstrates real-time product behavior, structured backend communication and smooth interactive UI patterns.",
     decisions: [
-      "WebSocket-based real-time updates for instant messaging experience.",
-      "Channel-based architecture to structure conversations efficiently.",
-      "Separation between authentication flow and messaging logic.",
-      "Optimized UI updates to keep the interface responsive and fluid.",
+      "WebSocket-based event flow for instant message delivery and live interface updates.",
+      "Channel-oriented data model to keep conversations structured and scalable.",
+      "Authentication flow separated from messaging logic to keep the backend easier to reason about.",
+      "Optimistic and responsive UI patterns to make the product feel fast during interactions.",
     ],
     features: [
       "Channel-based conversations",
-      "Real-time message updates",
+      "Real-time message synchronization",
       "Authentication and user sessions",
+      "Responsive messaging interface",
     ],
   },
 ] as const;

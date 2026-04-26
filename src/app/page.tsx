@@ -1,63 +1,53 @@
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { AboutSection } from "@/components/sections/about-section";
+import { HeroSection } from "@/components/sections/hero-section";
 import { ProjectCard } from "@/components/sections/project-card";
 import { ProofSection } from "@/components/sections/proof-section";
 import { StackSection } from "@/components/sections/stack-section";
-import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { projects } from "@/data/projects";
+
+type SectionSeparatorProps = {
+  variant?: "soft" | "accent";
+};
+
+function SectionSeparator({ variant = "accent" }: SectionSeparatorProps) {
+  return (
+    <div className="mx-auto max-w-6xl px-6">
+      <Separator
+        className={
+          variant === "soft"
+            ? "bg-gradient-to-r from-transparent via-border to-transparent"
+            : "bg-gradient-to-r from-transparent via-primary/60 to-transparent"
+        }
+      />
+    </div>
+  );
+}
 
 export default function Home() {
   return (
     <>
       <Header />
 
-      <main className="relative min-h-screen bg-background text-foreground">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(120,119,198,0.18),transparent_45%)]" />
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:48px_48px] mask-[linear-gradient(to_bottom,black,transparent_70%)]" />
+      <main className="relative min-h-screen overflow-hidden bg-background text-foreground">
+        <div className="pointer-events-none absolute inset-0 -z-10">
+          <div className="absolute left-1/2 top-[-18rem] h-[42rem] w-[62rem] -translate-x-1/2 rounded-full bg-primary/10 blur-[140px]" />
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--border)_1px,transparent_1px),linear-gradient(to_bottom,var(--border)_1px,transparent_1px)] bg-[size:56px_56px] opacity-40 [mask-image:radial-gradient(ellipse_70%_55%_at_50%_0%,#000_45%,transparent_100%)]" />
         </div>
 
-        <section className="mx-auto max-w-6xl px-6 py-24 md:py-32 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center rounded-full border px-3 py-1 text-sm text-muted-foreground backdrop-blur">
-              Fullstack Engineer · SaaS & Architecture
-            </div>
-
-            <h1 className="mt-8 max-w-4xl text-5xl font-semibold leading-tight tracking-tight sm:text-6xl">
-              Olivier Thorel
-              <span className="block text-muted-foreground">
-                Fullstack SaaS Developer.
-              </span>
-            </h1>
-
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
-              I build production-ready web platforms with clean architecture,
-              strong typing and scalable user interfaces.
-            </p>
-
-            <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <Button size="lg" asChild>
-                <a href="#work">View selected work</a>
-              </Button>
-
-              <Button variant="outline" size="lg" asChild>
-                <a
-                  href="https://github.com/othorel"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  View GitHub
-                </a>
-              </Button>
-            </div>
-          </div>
-        </section>
+        <HeroSection />
 
         <ProofSection />
 
-        <section id="work" className="mx-auto max-w-6xl px-6 pb-24 animate-in fade-in duration-700">
+        <SectionSeparator variant="soft" />
+
+        <section
+          id="work"
+          className="mx-auto max-w-6xl px-6 py-24 animate-in fade-in duration-500"
+        >
           <SectionHeading
             title="Selected Work"
             description="A selection of fullstack projects focused on real-world product and architecture challenges."
@@ -76,7 +66,12 @@ export default function Home() {
           </div>
         </section>
 
+        <SectionSeparator />
+
         <StackSection />
+
+        <SectionSeparator />
+
         <AboutSection />
       </main>
 
