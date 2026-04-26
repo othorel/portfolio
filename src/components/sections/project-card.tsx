@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { ProjectTitle } from "@/components/ui/project-title";
 
 type ProjectCardProps = {
   title: string;
@@ -26,7 +27,7 @@ export function ProjectCard({
 
         <div className="flex items-start justify-between gap-6">
           <h3 className="text-lg font-semibold leading-snug tracking-tight text-foreground">
-            {title}
+            <ProjectTitle title={title} gradient={false} className="group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-accent transition-all duration-300" />
           </h3>
 
           <div className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-muted/50 text-muted-foreground transition-all duration-300 group-hover:border-primary/50 group-hover:bg-primary/15 group-hover:text-foreground">

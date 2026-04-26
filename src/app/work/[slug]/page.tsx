@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { Badge } from "@/components/ui/badge";
 import { SectionBlock } from "@/components/ui/section-block";
+import { ProjectTitle } from "@/components/ui/project-title";
 import { projects } from "@/data/projects";
 
 type ProjectPageProps = {
@@ -48,23 +49,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               </p>
 
               <h1 className="mt-4 max-w-3xl text-4xl font-semibold leading-tight tracking-[-0.05em] sm:text-6xl">
-                {project.slug === "confidential-saas-platform" ? (
-                  <>
-                    Confidential SaaS{" "}
-                    <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                      Platform
-                    </span>
-                  </>
-                ) : project.slug === "real-time-messaging" ? (
-                  <>
-                    Real-time Messaging{" "}
-                    <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                      Platform
-                    </span>
-                  </>
-                ) : (
-                  project.title
-                )}
+                <ProjectTitle title={project.title} gradient={true} />
               </h1>
 
               <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
