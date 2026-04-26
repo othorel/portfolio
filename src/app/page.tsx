@@ -19,7 +19,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-[size:48px_48px] mask-[linear-gradient(to_bottom,black,transparent_70%)]" />
         </div>
 
-        <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+        <section className="mx-auto max-w-6xl px-6 py-24 md:py-32 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <div className="max-w-2xl">
             <div className="inline-flex items-center rounded-full border px-3 py-1 text-sm text-muted-foreground backdrop-blur">
               Fullstack Engineer · SaaS & Architecture
@@ -57,7 +57,7 @@ export default function Home() {
 
         <ProofSection />
 
-        <section id="work" className="mx-auto max-w-6xl px-6 pb-24">
+        <section id="work" className="mx-auto max-w-6xl px-6 pb-24 animate-in fade-in duration-700">
           <SectionHeading
             title="Selected Work"
             description="A selection of fullstack projects focused on real-world product and architecture challenges."
