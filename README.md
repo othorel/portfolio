@@ -1,36 +1,133 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=transparent&height=140&text=Olivier%20Thorel%20Portfolio&fontColor=E2E8F0&fontSize=42&desc=Fullstack%20Engineer%20%E2%80%A2%20Production-Ready%20Systems&descAlignY=70&descSize=18" />
+</p>
 
-## Getting Started
+<p align="center">
+  <a href="https://othorel.flexitaf.fr" target="_blank">
+    <img src="https://img.shields.io/badge/Live%20Website-othorel.flexitaf.fr-C9A24A?style=for-the-badge&logo=googlechrome&logoColor=white" />
+  </a>
+</p>
 
-First, run the development server:
+<p align="center">
+  Personal portfolio built as a production-grade product showcasing fullstack engineering, product thinking, and premium web craftsmanship.
+</p>
+
+---
+
+## Overview
+
+This portfolio is a custom-built platform reflecting my approach to modern product engineering:
+
+- Premium UI/UX design
+- Production-focused architecture
+- Fullstack product mindset
+- Scalable component systems
+- Performance-conscious implementation
+
+More than a personal website, it serves as a live benchmark of my engineering standards.
+
+---
+
+## Live Website
+
+**URL:** https://othorel.flexitaf.fr
+
+Includes:
+- Featured work
+- Technical expertise
+- Product-first case studies
+- Professional branding
+- Modern responsive experience
+
+---
+
+## Tech Stack
+
+| Category | Stack |
+|----------|------|
+| Framework | Next.js 16 |
+| Language | TypeScript |
+| Styling | Tailwind CSS |
+| UI System | shadcn/ui |
+| Icons | Lucide / React Icons |
+| Hosting | VPS Deployment |
+| Web Server | Nginx |
+| Process Management | PM2 |
+
+---
+
+## Core Features
+
+- Fully responsive premium design
+- Dark-first black & gold branding
+- Modular architecture
+- Advanced UI polish
+- SEO-conscious structure
+- VPS self-hosted deployment
+- Performance optimization
+- Maintainable codebase
+
+---
+
+## Project Structure
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+src/
+ ┣ app/
+ ┣ components/
+ ┃ ┣ layout/
+ ┃ ┣ sections/
+ ┃ ┗ ui/
+ ┣ data/
+ ┗ lib/
+```
+---
+
+## Local Development
+
+```bash
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Local environment:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## Production Deployment
 
-To learn more about Next.js, take a look at the following resources:
+Hosted on a VPS with custom deployment pipeline:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Next.js production build
+- PM2 process management
+- Nginx reverse proxy
+- Domain + SSL configuration
+- Performance-focused hosting control
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Design Philosophy
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This project emphasizes:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Product over template
+- Clarity over noise
+- Engineering over hype
+- Premium simplicity
+- Real-world credibility
+
+---
+
+## Author
+
+Olivier Thorel
+Fullstack Engineer focused on scalable SaaS systems, backend architecture, and production-ready digital products.
+
+<p align="center"> <a href="https://othorel.flexitaf.fr">Visit Portfolio</a> </p>
+
+---
+
