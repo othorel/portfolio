@@ -17,14 +17,11 @@ export function ProjectCard({
   slug,
 }: ProjectCardProps) {
   return (
-    <Link href={`/work/${slug}`} className="group block h-full outline-none">
-      <article className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-card/50 p-8 shadow-sm backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:border-primary/40 hover:bg-card/80 hover:shadow-2xl hover:shadow-primary/10 ring-1 ring-inset ring-white/5">
-        
-        {/* Background */}
+    <Link href={`/${slug}`} className="group block h-full outline-none">
+      <article className="relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-card/50 p-8 shadow-sm ring-1 ring-inset ring-white/5 backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:border-primary/40 hover:bg-card/80 hover:shadow-2xl hover:shadow-primary/10">
         <div className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-muted/30 to-transparent opacity-60" />
         <div className="pointer-events-none absolute right-0 top-0 h-48 w-48 translate-x-16 -translate-y-16 rounded-full bg-primary/10 blur-3xl transition-opacity duration-500 group-hover:bg-primary/20" />
 
-        {/* Top glow line */}
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
         <div className="flex items-start justify-between gap-6">
@@ -33,11 +30,10 @@ export function ProjectCard({
               <ProjectTitle
                 title={title}
                 gradient={false}
-                className="group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-accent transition-all duration-300"
+                className="transition-all duration-300 group-hover:bg-gradient-to-r group-hover:from-primary group-hover:to-accent group-hover:bg-clip-text group-hover:text-transparent"
               />
             </h3>
 
-            {/* ✅ Barre gradient sous le titre */}
             <div className="mt-4 h-px w-12 bg-gradient-to-r from-primary to-accent opacity-50 transition-all duration-500 group-hover:w-24 group-hover:opacity-100" />
           </div>
 

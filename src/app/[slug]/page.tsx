@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, CheckCircle2 } from "lucide-react";
-
+import { ArrowUpRight, CheckCircle2 } from "lucide-react";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { Badge } from "@/components/ui/badge";
@@ -34,14 +33,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         </div>
 
         <section className="mx-auto max-w-5xl px-6 py-24">
-          <Link
-            href="/#work"
-            className="group inline-flex items-center gap-2 rounded-full border border-border bg-card/70 px-4 py-2 text-sm text-muted-foreground shadow-sm backdrop-blur-md transition-all hover:border-primary/40 hover:bg-accent/20 hover:text-foreground"
-          >
-            <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-0.5" />
+          <Link href="/">
             Back to work
           </Link>
-
           <div className="mt-12 grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
             <div>
               <p className="text-sm font-medium text-muted-foreground">

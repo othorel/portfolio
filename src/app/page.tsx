@@ -5,6 +5,7 @@ import { HeroSection } from "@/components/sections/hero-section";
 import { ProjectCard } from "@/components/sections/project-card";
 import { ProofSection } from "@/components/sections/proof-section";
 import { StackSection } from "@/components/sections/stack-section";
+import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { projects } from "@/data/projects";
 
@@ -52,13 +53,42 @@ export default function Home() {
 
           <div className="mt-12 grid gap-6 md:grid-cols-2 lg:gap-8">
             {projects.map((project) => (
-              <ProjectCard
-                key={project.slug}
-                title={project.title}
-                description={project.description}
-                tags={project.tags}
-                slug={project.slug}
-              />
+              <div key={project.slug} className="flex flex-col gap-3">
+                <ProjectCard
+                  title={project.title}
+                  description={project.description}
+                  tags={project.tags}
+                  slug={project.slug}
+                />
+
+                {project.slug === "confidential-saas-platform" && (
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    disabled
+                    className="w-fit border border-border/50 bg-card/70 text-muted-foreground shadow-sm backdrop-blur-md"
+                  >
+                    Private / Coming soon
+                  </Button>
+                )}
+
+                {project.slug === "serieMatch" && (
+                  <Button
+                    asChild
+                    size="sm"
+                    variant="secondary"
+                    className="w-fit border border-border/50 bg-card/70 text-muted-foreground shadow-sm backdrop-blur-md transition-all hover:border-primary/40 hover:bg-primary/10 hover:text-foreground"
+                  >
+                    <a
+                      href="https://seriematch.othorel.fr"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Visit SerieMatch
+                    </a>
+                  </Button>
+                )}
+              </div>
             ))}
           </div>
         </section>

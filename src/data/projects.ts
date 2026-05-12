@@ -27,30 +27,43 @@ export const projects = [
     ],
   },
   {
-    title: "Real-time Messaging Platform",
-    slug: "real-time-messaging",
+    title: "SerieMatch",
+    slug: "serieMatch",
     description:
-      "A real-time communication app with channel-based conversations, live message updates, authentication and a responsive interface inspired by modern team tools.",
-    tags: ["React", "Node.js", "WebSocket", "PostgreSQL"],
+      "A fullstack series discovery app that helps users find recommendations based on their tastes, platforms, viewing mood and personal preferences.",
+    tags: [
+      "Next.js",
+      "NestJS",
+      "Prisma",
+      "PostgreSQL",
+      "Meilisearch",
+      "TMDB API",
+      "TypeScript",
+      "Zod",
+      "Tailwind CSS",
+      "shadcn/ui",
+    ],
     context:
-      "This project explores the core mechanics of a modern messaging product: authenticated users, channels, live conversations and immediate interface feedback.",
+      "SerieMatch was built as a product-focused fullstack project to make series discovery more personal than a basic catalogue. Users can create an account, complete a preference questionnaire, browse a searchable catalogue and build a personal library around what they want to watch, have already seen or are not interested in.",
     architecture:
-      "The application is structured around a frontend client connected to a backend API, with WebSocket events used to synchronize message and channel updates in real time.",
+      "The application uses Next.js for the frontend, NestJS for the API, Prisma with PostgreSQL for persistence, Meilisearch for catalogue search, and the TMDB API to enrich series data. Shared TypeScript and Zod schemas keep validation and data contracts consistent across the stack.",
     challenges:
-      "The main challenge was keeping the interface fast and predictable while handling live updates, channel switching, user sessions and message state synchronization.",
+      "The main challenge was designing a recommendation flow without relying on AI: user preferences, platform choices, moods, genres and personal ratings all need to influence the recommendation score in a predictable and maintainable way.",
     outcome:
-      "The result is a polished fullstack application that demonstrates real-time product behavior, structured backend communication and smooth interactive UI patterns.",
+      "The result is a structured fullstack application with authentication, preference onboarding, catalogue search, personal library management and a scoring-based recommendation system that improves as the user rates series.",
     decisions: [
-      "WebSocket-based event flow for instant message delivery and live interface updates.",
-      "Channel-oriented data model to keep conversations structured and scalable.",
-      "Authentication flow separated from messaging logic to keep the backend easier to reason about.",
-      "Optimistic and responsive UI patterns to make the product feel fast during interactions.",
+      "Use a scoring algorithm instead of AI to keep recommendations explainable, predictable and easier to iterate on.",
+      "Use thumbs-based ratings to increase or decrease recommendation scores based on user feedback.",
+      "Use Meilisearch to provide fast catalogue search and filtering by genre, mood and platform.",
+      "Use the TMDB API to import and enrich series data with metadata, posters and popularity signals.",
+      "Share TypeScript and Zod schemas between frontend and backend to keep API contracts and validation consistent.",
     ],
     features: [
-      "Channel-based conversations",
-      "Real-time message synchronization",
-      "Authentication and user sessions",
-      "Responsive messaging interface",
+      "Account creation and authentication",
+      "Preference questionnaire based on tastes, platforms and viewing mood",
+      "Searchable series catalogue powered by Meilisearch",
+      "Personal library with to-watch, watched and not-interested statuses",
+      "Scoring-based recommendation system influenced by user ratings",
     ],
-  },
+  }
 ] as const;
