@@ -1,12 +1,14 @@
 export const projects = [
   {
-    title: "Confidential SaaS Platform",
-    slug: "confidential-saas-platform",
+    title: "Flexitaf",
+    slug: "flexitaf",
     description:
-      "A production-oriented SaaS platform with role-based onboarding, secure document workflows, admin review tools and shared business rules across the stack.",
+      "A recruitment and mission management SaaS currently in progress, focused on onboarding, document validation and administrative workflow automation.",
+    href: "https://flexitaf.fr",
+    status: "In progress",
     tags: ["Next.js", "NestJS", "Prisma", "PostgreSQL", "S3"],
     context:
-      "This project was built around a common SaaS problem: turning a complex onboarding and validation process into a clear product experience for multiple user roles.",
+      "Flexitaf was built around a common SaaS problem: turning a complex onboarding and validation process into a clear product experience for multiple user roles.",
     architecture:
       "The platform uses Next.js for the user interface, NestJS for the API layer, Prisma with PostgreSQL for persistence, and shared TypeScript/Zod validation to keep frontend and backend contracts aligned.",
     challenges:
@@ -26,11 +28,14 @@ export const projects = [
       "Shared business rules between frontend and backend",
     ],
   },
+
   {
     title: "SerieMatch",
     slug: "serieMatch",
     description:
       "A fullstack series discovery app that helps users find recommendations based on their tastes, platforms, viewing mood and personal preferences.",
+    href: "https://seriematch.othorel.fr",
+    status: "Live",
     tags: [
       "Next.js",
       "NestJS",

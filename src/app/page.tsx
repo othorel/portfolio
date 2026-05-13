@@ -61,30 +61,15 @@ export default function Home() {
                   slug={project.slug}
                 />
 
-                {project.slug === "confidential-saas-platform" && (
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    disabled
-                    className="w-fit border border-border/50 bg-card/70 text-muted-foreground shadow-sm backdrop-blur-md"
-                  >
-                    Private / Coming soon
-                  </Button>
-                )}
-
-                {project.slug === "serieMatch" && (
+                {"href" in project && (
                   <Button
                     asChild
-                    size="sm"
+                    size="lg"
                     variant="secondary"
-                    className="w-fit border border-border/50 bg-card/70 text-muted-foreground shadow-sm backdrop-blur-md transition-all hover:border-primary/40 hover:bg-primary/10 hover:text-foreground"
+                    className="mt-2 w-fit rounded-full border border-primary/30 bg-primary/10 px-5 text-sm font-semibold text-foreground shadow-[0_0_30px_oklch(0.77_0.14_85_/_12%)] backdrop-blur-md transition-all hover:-translate-y-0.5 hover:border-primary/60 hover:bg-primary/20 hover:shadow-[0_0_40px_oklch(0.77_0.14_85_/_20%)]"
                   >
-                    <a
-                      href="https://seriematch.othorel.fr"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Visit SerieMatch
+                    <a href={project.href} target="_blank" rel="noopener noreferrer">
+                      Visit {project.title}
                     </a>
                   </Button>
                 )}
