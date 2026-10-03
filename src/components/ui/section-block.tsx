@@ -1,13 +1,18 @@
 type SectionBlockProps = {
   title: string;
+  id?: string;
+  number?: string;
   children: React.ReactNode;
 };
 
-export function SectionBlock({ title, children }: SectionBlockProps) {
+export function SectionBlock({ title, id, number, children }: SectionBlockProps) {
   return (
-    <div className="py-10">
-      <h2 className="text-xl font-semibold">{title}</h2>
-      <div className="mt-4 text-muted-foreground">{children}</div>
-    </div>
+    <section className="case-section" id={id}>
+      <div className="case-section-title">
+        {number && <span className="eyebrow accent-text">{number}</span>}
+        <h2>{title}</h2>
+      </div>
+      <div className="case-section-content">{children}</div>
+    </section>
   );
 }

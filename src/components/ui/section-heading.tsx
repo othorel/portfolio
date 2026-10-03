@@ -1,16 +1,18 @@
 type SectionHeadingProps = {
   title: string;
   description?: string;
+  number?: string;
+  label?: string;
 };
 
-export function SectionHeading({ title, description }: SectionHeadingProps) {
+export function SectionHeading({ title, description, number, label }: SectionHeadingProps) {
   return (
-    <div className="max-w-2xl">
-      <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
-
-      {description ? (
-        <p className="mt-3 text-muted-foreground">{description}</p>
-      ) : null}
+    <div className="section-heading">
+      <div>
+        <p className="eyebrow section-kicker"><span>{number}</span>{label ?? title}</p>
+        <h2>{title}</h2>
+      </div>
+      {description && <p className="section-description">{description}</p>}
     </div>
   );
 }

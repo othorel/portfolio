@@ -1,54 +1,25 @@
 "use client";
 
 import { Moon, Sun } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
+
+function subscribe(callback: () => void) {
+  const observer = new MutationObserver(callback);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+  return () => observer.disconnect();
+}
 
 export function ThemeToggle() {
-  const [isDark, setIsDark] = useState(true);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("theme");
-
-    if (saved === "light") {
-      document.documentElement.classList.remove("dark");
-    } else {
-      document.documentElement.classList.add("dark");
-    }
-
-    const timer = setTimeout(() => {
-      if (saved === "light") {
-        setIsDark(false);
-      } else {
-        setIsDark(true);
-      }
-    }, 0);
-
-    return () => clearTimeout(timer);
-  }, []);
+  const isDark = useSyncExternalStore(subscribe, () => document.documentElement.classList.contains("dark"), () => true);
 
   function toggle() {
-    const html = document.documentElement;
-    const next = !isDark;
-
-    if (next) {
-      html.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      html.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-
-    setIsDark(next);
+    document.documentElement.classList.toggle("dark", !isDark);
+    try { localStorage.setItem("theme", isDark ? "light" : "dark"); } catch { /* Theme still works when storage is unavailable. */ }
   }
 
   return (
-    <button
-      type="button"
-      onClick={toggle}
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-      className="rounded-full border border-border bg-card/60 p-2 transition hover:border-primary/40 hover:bg-accent/20"
-    >
-      {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
+    <button type="button" onClick={toggle} className="icon-link" aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"} title={isDark ? "Light mode" : "Dark mode"}>
+      {isDark ? <Sun /> : <Moon />}
     </button>
   );
 }

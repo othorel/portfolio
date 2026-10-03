@@ -1,86 +1,89 @@
+"use client";
+
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Dialog } from "radix-ui";
+import { ArrowUpRight, Menu, X } from "lucide-react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { Button } from "@/components/ui/button";
+
+const navigation = [
+  { id: "work", label: "Work" },
+  { id: "stack", label: "Stack" },
+  { id: "about", label: "About" },
+];
 
 export function Header() {
+  const pathname = usePathname();
+  const [active, setActive] = useState("");
+  const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    function updateNavigation() {
+      setScrolled(window.scrollY > 24);
+      const current = navigation.filter(({ id }) => {
+        const section = document.getElementById(id);
+        return section && section.getBoundingClientRect().top <= 180;
+      }).at(-1);
+      setActive(current?.id ?? "");
+    }
+    updateNavigation();
+    window.addEventListener("scroll", updateNavigation, { passive: true });
+    return () => window.removeEventListener("scroll", updateNavigation);
+  }, [pathname]);
+
+  const currentSection = pathname === "/" ? active : "work";
+
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/70 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-
-        {/* LOGO */}
-        <Link
-          href="/"
-          className="flex items-center gap-2 text-sm font-semibold tracking-tight"
-        >
-          <span className="rounded-full bg-gradient-to-br from-primary to-accent px-2 py-1 text-white shadow-sm">
-            OT
-          </span>
-          <span className="hidden sm:inline">Olivier Thorel</span>
+    <header className="site-header" data-scrolled={scrolled}>
+      <div className="page-shell header-inner">
+        <Link href="/" className="identity" aria-label="Olivier Thorel — home">
+          <span className="identity-mark" aria-hidden="true">ot<span>.</span></span>
+          <span>Olivier Thorel</span>
         </Link>
-
-        {/* NAV */}
-        <nav className="hidden items-center gap-2 md:flex">
-          {[
-            { href: "/#work", label: "Work" },
-            { href: "/#stack", label: "Stack" },
-            { href: "/#about", label: "About" },
-          ].map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="
-                rounded-full px-4 py-1.5 text-sm
-                text-muted-foreground
-                transition-all
-                hover:bg-muted/40
-                hover:text-foreground
-              "
-            >
-              {item.label}
-            </Link>
+        <nav className="desktop-nav" aria-label="Main navigation">
+          {navigation.map(({ id, label }) => (
+            <a key={id} href={`/#${id}`} className="nav-link" aria-current={currentSection === id ? "location" : undefined}>{label}</a>
           ))}
         </nav>
-
-        {/* RIGHT SIDE */}
-        <div className="flex items-center gap-2">
+        <div className="header-actions">
           <ThemeToggle />
-
-          {/* GitHub */}
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2 border-border bg-card/60 hover:bg-card hover:border-primary/40"
-            asChild
-          >
-            <a
-              href="https://github.com/othorel"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <FaGithub className="h-4 w-4" />
-              <span className="hidden sm:inline">GitHub</span>
-            </a>
-          </Button>
-
-          {/* LinkedIn */}
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2 border-border bg-card/60 hover:bg-card hover:border-primary/40"
-            asChild
-          >
-            <a
-              href="https://www.linkedin.com/in/olivier-thorel-24a87b158/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <FaLinkedin className="h-4 w-4" />
-              <span className="hidden sm:inline">LinkedIn</span>
-            </a>
-          </Button>
+          <span className="header-divider" aria-hidden="true" />
+          <a className="icon-link header-social" href="https://github.com/othorel" target="_blank" rel="noopener noreferrer" aria-label="GitHub (opens in a new tab)" title="GitHub"><FaGithub /></a>
+          <a className="icon-link header-social" href="https://www.linkedin.com/in/olivier-thorel-24a87b158/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn (opens in a new tab)" title="LinkedIn"><FaLinkedin /></a>
+          <Dialog.Root open={open} onOpenChange={setOpen}>
+            <Dialog.Trigger asChild>
+              <Button variant="ghost" size="icon" className="mobile-menu-trigger" aria-label="Open navigation"><Menu /></Button>
+            </Dialog.Trigger>
+            <Dialog.Portal>
+              <Dialog.Overlay className="mobile-nav-overlay" />
+              <Dialog.Content className="mobile-nav-panel">
+                <div className="mobile-nav-top">
+                  <Dialog.Title className="identity">Olivier Thorel<span className="accent-text">.</span></Dialog.Title>
+                  <Dialog.Close asChild><Button variant="ghost" size="icon" aria-label="Close navigation"><X /></Button></Dialog.Close>
+                </div>
+                <Dialog.Description className="eyebrow">Explore the portfolio</Dialog.Description>
+                <nav aria-label="Mobile navigation" className="mobile-nav-links">
+                  {navigation.map(({ id, label }, index) => (
+                    <a key={id} href={`/#${id}`} onClick={() => setOpen(false)} aria-current={currentSection === id ? "location" : undefined}>
+                      <span className="eyebrow">0{index + 1}</span><span>{label}</span><ArrowUpRight />
+                    </a>
+                  ))}
+                </nav>
+                <div className="mobile-nav-contact">
+                  <a className="text-link" href="mailto:thorel.olivier@hotmail.com">Get in touch <ArrowUpRight className="size-4" /></a>
+                  <div className="flex gap-6">
+                    <a className="text-link" href="https://github.com/othorel" target="_blank" rel="noopener noreferrer">GitHub <ArrowUpRight className="size-4" /></a>
+                    <a className="text-link" href="https://www.linkedin.com/in/olivier-thorel-24a87b158/" target="_blank" rel="noopener noreferrer">LinkedIn <ArrowUpRight className="size-4" /></a>
+                  </div>
+                </div>
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
         </div>
-
       </div>
     </header>
   );
